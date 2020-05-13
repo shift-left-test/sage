@@ -6,3 +6,4 @@
 /.tox
 __pycache__
 *.pyc
+/sample_project/build
