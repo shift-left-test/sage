@@ -1,4 +1,8 @@
 /report
 /venv
+/dist
+/tmp
+/*.egg-info
+/.tox
 __pycache__
 *.pyc

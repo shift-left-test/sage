@@ -21,10 +21,10 @@ def main():
     
     if args.source:
         ctx.src_path = os.path.abspath(args.source)
-    
+
     if args.build:
         ctx.bld_path = os.path.abspath(args.build)
-    
+
     if args.output_path:
         ctx.output_path = os.path.abspath(args.output_path)
 
@@ -36,19 +36,12 @@ def main():
             exit(1)
         # generage CompileCommand
         # compilation db
-
         subprocess.call(["compiledb", "make"])
 
     for tool in TOOL_LIST:
         print("* {} is running...".format(tool))
         wrapper = get_tool_wrapper(tool)(ctx)
         wrapper.run()
-
-    # check utils list
-
-    # check
-
-    # report output
 
 
 if __name__ == "__main__":
