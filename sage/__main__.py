@@ -36,7 +36,7 @@ def main():
             exit(1)
         # generage CompileCommand
         # compilation db
-        subprocess.call(["compiledb", "make"])
+        subprocess.call(["compiledb", "--command-style", "make"])
 
     for tool in TOOL_LIST:
         print("* {} is running...".format(tool))

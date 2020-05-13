@@ -12,5 +12,5 @@ else
 fi
 
 mkdir -p build && cd build
-cmake ..
+qmake ..
 cd ../..
