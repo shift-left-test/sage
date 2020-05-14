@@ -1,8 +1,8 @@
 project(other)
 
 add_executable(other
-    cfunction.c
-    classdrived.cpp
-    foo.cpp
+    c_src/cfunction.c
+    cpp_src/classdrived.cpp
+    cpp_src/foo.cpp
     main.cpp
 )
