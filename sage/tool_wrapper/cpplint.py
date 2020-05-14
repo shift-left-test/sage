@@ -8,7 +8,6 @@ class CppLintWrapper(ToolWrapper):
         args = ["cpplint"]
         REPORT = None
         if self.ctx.output_path:
-            args += ["--output=vs7"]
             REPORT = open(os.path.join(self.ctx.output_path, "cpplint_report.txt"), "w")
         args += self.get_src_list()
         os.chdir(self.ctx.src_path)
