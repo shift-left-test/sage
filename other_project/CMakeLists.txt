@@ -1,6 +1,6 @@
-project(sample)
+project(other)
 
-add_executable(sample
+add_executable(other
     cfunction.c
     classdrived.cpp
     foo.cpp

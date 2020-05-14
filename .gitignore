@@ -7,3 +7,4 @@
 __pycache__
 *.pyc
 /sample_project/build
+/other_project/build
