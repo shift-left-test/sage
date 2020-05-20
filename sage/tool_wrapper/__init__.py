@@ -1,7 +1,8 @@
 import os
 import json
+from distutils.spawn import find_executable
 
-__all__ = ["get_tool_wrapper", "WrapperContext", "cppcheck", "cpplint", "clang_tidy"]
+__all__ = ["get_tool_wrapper", "get_tool_executable", "WrapperContext", "cppcheck", "cpplint", "clang_tidy"]
 
 WRAPPER_MAP = {}
 
@@ -9,6 +10,8 @@ WRAPPER_MAP = {}
 def get_tool_wrapper(toolname):
     return WRAPPER_MAP[toolname]
 
+def get_tool_executable(toolname):
+    return find_executable(toolname)
 
 def register_wrapper(name, clazz):
     global WRAPPER_MAP
@@ -32,7 +35,6 @@ class ToolWrapper():
     def run(self):
         pass
 
-    
     def get_src_list(self):
         src_list = []
         with open(self.ctx.proj_file) as f:
