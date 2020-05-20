@@ -39,6 +39,9 @@ def main():
         subprocess.call(["compiledb", "--command-style", "make"])
 
     for tool in TOOL_LIST:
+        if get_tool_executable(tool) is None:
+            print("* {} is not installed!!!".format(tool))
+            continue
         print("* {} is running...".format(tool))
         wrapper = get_tool_wrapper(tool)(ctx)
         wrapper.run()

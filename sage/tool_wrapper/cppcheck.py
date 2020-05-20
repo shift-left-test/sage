@@ -1,11 +1,11 @@
 import os
 import subprocess
-from . import register_wrapper, ToolWrapper
+from . import register_wrapper, ToolWrapper, get_tool_executable
 
 class CppCheckWrapper(ToolWrapper):
     def run(self):
         os.chdir(self.ctx.bld_path)
-        args = ["cppcheck", 
+        args = [get_tool_executable("cppcheck"), 
         "--project={}".format(self.ctx.proj_file)]
         if self.ctx.output_path:
             args += ["--xml",
