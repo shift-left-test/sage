@@ -18,11 +18,13 @@ def register_wrapper(name, clazz):
     WRAPPER_MAP[name] = clazz
 
 
-class WrapperContext():
+class WrapperContext(object):
     src_path = os.getcwd()
     bld_path = os.getcwd()
     proj_file = "compile_commands.json"
     output_path = None
+    tool_list = []
+
 
 class ToolWrapper():
     def __init__(self, ctx):

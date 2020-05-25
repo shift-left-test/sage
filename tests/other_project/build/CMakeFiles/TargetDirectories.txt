@@ -1,0 +1,3 @@
+/home/dennis/work/sage/tests/other_project/build/CMakeFiles/rebuild_cache.dir
+/home/dennis/work/sage/tests/other_project/build/CMakeFiles/other.dir
+/home/dennis/work/sage/tests/other_project/build/CMakeFiles/edit_cache.dir

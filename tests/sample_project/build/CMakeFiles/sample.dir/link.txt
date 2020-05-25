@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/sample.dir/cfunction.c.o CMakeFiles/sample.dir/classdrived.cpp.o CMakeFiles/sample.dir/foo.cpp.o CMakeFiles/sample.dir/main.cpp.o  -o sample 
