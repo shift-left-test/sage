@@ -1,4 +1,6 @@
 import os
+import subprocess
+
 from .tool_wrapper import *
 
 MAKEFILE = "Makefile"
