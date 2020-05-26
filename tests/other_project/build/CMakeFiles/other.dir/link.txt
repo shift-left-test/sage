@@ -1,1 +1,0 @@
-/usr/bin/c++    -rdynamic CMakeFiles/other.dir/c_src/cfunction.c.o CMakeFiles/other.dir/cpp_src/classdrived.cpp.o CMakeFiles/other.dir/cpp_src/foo.cpp.o CMakeFiles/other.dir/main.cpp.o  -o other 

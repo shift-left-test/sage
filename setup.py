@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="sage",
-    version="1.0.1",
+    version="0.3.0",
     license="MIT",
     author="sunggon.kim",
     author_email="sunggon82.kim@lge.com",
