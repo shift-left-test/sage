@@ -1,4 +1,5 @@
 import os
+import sys
 import subprocess
 from . import register_wrapper, ToolWrapper
 
@@ -15,6 +16,8 @@ class ClangTidyWrapper(ToolWrapper):
 
         if REPORT:
             REPORT.close()
+            with open(os.path.join(self.ctx.output_path, "clang-tidy-report.txt")) as f:
+                sys.stdout.write(f.read())
 
 
 register_wrapper("clang-tidy", ClangTidyWrapper)
