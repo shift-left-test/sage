@@ -2,25 +2,14 @@ import os
 import subprocess
 import shutil
 
-def test_basic():
-    import sage
+def test_compile_commands_generation(makefile_build):
+    from sage.tool_wrapper import WrapperContext
+    from sage.utils import generate_compile_commands, run_check_tools
 
-    test_proj_root = os.path.dirname(__file__)
+    ctx = WrapperContext(makefile_build.src_path, makefile_build.bld_path)
 
-    SRC_PATH = os.path.join(test_proj_root, "sample_project")
-    BLD_PATH = os.path.join(test_proj_root, "sample_project/build")
+    generate_compile_commands(ctx)
+    assert os.path.exists(os.path.join(makefile_build.bld_path, "compile_commands.json"))
 
-    shutil.rmtree(BLD_PATH, ignore_errors=True)
-    os.mkdir(BLD_PATH)
-    os.chdir(BLD_PATH)
-    subprocess.call(["cmake", SRC_PATH])
-
-    ctx = sage.WrapperContext()
-    ctx.src_path = SRC_PATH
-    ctx.bld_path = BLD_PATH
-
-    sage.generate_compile_commands(ctx)
-    assert os.path.exists(os.path.join(BLD_PATH, "compile_commands.json"))
-
-    sage.run_check_tools(ctx)
+    run_check_tools(ctx)
 

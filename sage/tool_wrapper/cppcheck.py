@@ -4,7 +4,7 @@ from . import register_wrapper, ToolWrapper, get_tool_executable
 
 class CppCheckWrapper(ToolWrapper):
     def run(self):
-        os.chdir(self.ctx.bld_path)
+        os.chdir(self.ctx.work_path)
         args = [get_tool_executable("cppcheck"), 
         "--project={}".format(self.ctx.proj_file)]
         subprocess.call(args)
