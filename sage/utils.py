@@ -21,7 +21,7 @@ def _get_hash(file):
             data = f.read(BUF_SIZE)
             if not data:
                 break
-            sha1.update(data)
+            sha1.update(data.encode())
 
     return sha1.hexdigest()
 

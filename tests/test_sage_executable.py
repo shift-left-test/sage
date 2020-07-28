@@ -15,7 +15,7 @@ def test_basic(basic_build):
 
     (output, error) = proc.communicate()
 
-    assert u"cpplint is running..." in str(output)
+    assert u"cpplint is running..." in str(output), str(output)
     assert u"cppcheck is running..." in str(output)
 
 
@@ -49,5 +49,5 @@ def test_only_source(source_only_build):
 
     (output, error) = proc.communicate()
 
-    assert u"cpplint is running..." in str(output)
+    assert u"cpplint is running..." in str(output), str(output)
     assert u"cppcheck is running..." in str(output)

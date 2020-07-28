@@ -92,5 +92,5 @@ def source_only_build(request):
     ctx.add_src_file("main.cpp", MAIN_CPP_CONTENT)
     ctx.add_src_file("Makefile", MAKEFILE_CONTENT)
 
-    #request.addfinalizer(ctx.destroy)
+    request.addfinalizer(ctx.destroy)
     return ctx
