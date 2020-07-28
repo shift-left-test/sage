@@ -1,6 +1,8 @@
 import argparse
+import logging
 import subprocess
 import os
+import sys
 
 from .tool_wrapper import *
 from .utils import generate_compile_commands, run_check_tools
@@ -14,7 +16,10 @@ def main():
     parser.add_argument("--target", help="compile target triple")
     parser.add_argument("tools", nargs="*", help="Static analysis program list",
                         default=["cppcheck", "cpplint", "clang-tidy"])
+
     args = parser.parse_args()
+
+    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
     if args.tool_list:
         for tool in get_tool_list():
@@ -23,8 +28,6 @@ def main():
 
     ctx = WrapperContext(args.source, args.build, args.output_path, args.target, args.tools)
     
-    # TODO: write generating compile_commands.json file info to cache
-    #       if generated, it must be regenerated next time.
     generate_compile_commands(ctx)
 
     run_check_tools(ctx)
