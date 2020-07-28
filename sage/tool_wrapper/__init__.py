@@ -23,11 +23,12 @@ def get_tool_list():
 class WrapperContext(object):
     src_list = None
     
-    def __init__(self, source, build=None, output_path=None, tool_list=[]):
+    def __init__(self, source, build=None, output_path=None, target=None, tool_list=[]):
         self.src_path = os.path.abspath(source) if source else os.getcwd()
         self.bld_path = os.path.abspath(build) if build else None
         self.output_path = os.path.abspath(output_path) if output_path else None
         self.proj_file = "compile_commands.json"
+        self.target = target
         self.tool_list = tool_list
         self.work_path = self.bld_path if self.bld_path else self.src_path
 

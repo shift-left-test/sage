@@ -11,6 +11,7 @@ def main():
     parser.add_argument("--build", help="build path")
     parser.add_argument("--output-path", help="output path")
     parser.add_argument("--tool-list", action='store_true', help="show tool list")
+    parser.add_argument("--target", help="compile target triple")
     parser.add_argument("tools", nargs="*", help="Static analysis program list",
                         default=["cppcheck", "cpplint", "clang-tidy"])
     args = parser.parse_args()
@@ -20,7 +21,7 @@ def main():
             print("{}: {}".format(tool, get_tool_executable(tool)))
         return
 
-    ctx = WrapperContext(args.source, args.build, args.output_path, args.tools)
+    ctx = WrapperContext(args.source, args.build, args.output_path, args.target, args.tools)
     
     # TODO: write generating compile_commands.json file info to cache
     #       if generated, it must be regenerated next time.
