@@ -15,8 +15,7 @@ def test_basic(basic_build):
 
     (output, error) = proc.communicate()
 
-    assert u"cpplint is running..." in str(output), str(output)
-    assert u"cppcheck is running..." in str(output)
+    assert u"cpplint is running..." in str(output)
 
 
 def test_output(basic_build):
@@ -36,7 +35,6 @@ def test_output(basic_build):
     print(output)
     print(error)
     assert os.path.exists("{}/report/cpplint_report.txt".format(basic_build.bld_path))
-    assert os.path.exists("{}/report/cppcheck_report.xml".format(basic_build.bld_path))
 
 
 def test_only_source(source_only_build):
@@ -49,5 +47,4 @@ def test_only_source(source_only_build):
 
     (output, error) = proc.communicate()
 
-    assert u"cpplint is running..." in str(output), str(output)
-    assert u"cppcheck is running..." in str(output)
+    assert u"There is no 'compile_commands.json'" in str(output)

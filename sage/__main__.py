@@ -5,7 +5,9 @@ import os
 import sys
 
 from .tool_wrapper import *
-from .utils import generate_compile_commands, run_check_tools
+from .utils import run_check_tools
+
+logger = logging.getLogger('SAGE')
 
 def main():
     parser = argparse.ArgumentParser(description="Static Analysis Group Execution")
@@ -23,14 +25,15 @@ def main():
 
     if args.tool_list:
         for tool in get_tool_list():
-            print("{}: {}".format(tool, get_tool_executable(tool)))
+            logger.info("{}: {}".format(tool, get_tool_executable(tool)))
         return
 
     ctx = WrapperContext(args.source, args.build, args.output_path, args.target, args.tools)
-    
-    generate_compile_commands(ctx)
 
-    run_check_tools(ctx)
+    if os.path.exists(os.path.join(ctx.work_path, "compile_commands.json")):
+        run_check_tools(ctx)
+    else:
+        logger.error("There is no 'compile_commands.json'")
 
 
 if __name__ == "__main__":
