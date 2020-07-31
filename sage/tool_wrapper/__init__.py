@@ -1,6 +1,9 @@
 import os
 import json
+import logging
 from distutils.spawn import find_executable
+
+logger = logging.getLogger('SAGE')
 
 __all__ = ["get_tool_wrapper", "get_tool_list", "WrapperContext", "cppcheck", "cpplint", "clang_tidy"]
 
@@ -12,7 +15,6 @@ def get_tool_wrapper(toolname):
 
 def register_wrapper(name, clazz):
     global WRAPPER_MAP
-    print("tool {} registered".format(name))
     WRAPPER_MAP[name] = clazz
 
 def get_tool_list():
@@ -57,7 +59,7 @@ class ToolWrapper():
 
     def get_tool_path(self, ctx):
         if ctx.tool_path:
-            return os.path.join(ctx.tool_path, self.executable_name)
+            return find_executable(self.executable_name, ctx.tool_path)
         else:
             return find_executable(self.executable_name)
 
