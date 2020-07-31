@@ -11,11 +11,11 @@ logger = logging.getLogger('SAGE')
 
 def main():
     parser = argparse.ArgumentParser(description="Static Analysis Group Execution")
-    parser.add_argument("--source", help="source path")
-    parser.add_argument("--build", help="build path")
+    parser.add_argument("--source-path", help="source path")
+    parser.add_argument("--build-path", help="build path")
+    parser.add_argument("--tool-path", help="if this option is specified, only tools in this path is executed")
     parser.add_argument("--output-path", help="output path")
-    parser.add_argument("--tool-list", action='store_true', help="show tool list")
-    parser.add_argument("--target", help="compile target triple")
+    parser.add_argument("--target-triple", help="compile target triple")
     parser.add_argument("tools", nargs="*", help="Static analysis program list",
                         default=["cppcheck", "cpplint", "clang-tidy"])
 
@@ -23,12 +23,7 @@ def main():
 
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
-    if args.tool_list:
-        for tool in get_tool_list():
-            logger.info("{}: {}".format(tool, get_tool_executable(tool)))
-        return
-
-    ctx = WrapperContext(args.source, args.build, args.output_path, args.target, args.tools)
+    ctx = WrapperContext(args.source_path, args.build_path, args.tool_path, args.output_path, args.target_triple, args.tools)
 
     if os.path.exists(os.path.join(ctx.work_path, "compile_commands.json")):
         run_check_tools(ctx)

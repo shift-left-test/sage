@@ -6,9 +6,9 @@ import pytest
 def test_basic(basic_build):
     proc = output = subprocess.Popen([
         "sage",
-        "--source",
+        "--source-path",
         basic_build.src_path,
-        "--build",
+        "--build-path",
         basic_build.bld_path],
         stdout = subprocess.PIPE,
         stderr = subprocess.PIPE)
@@ -21,9 +21,9 @@ def test_basic(basic_build):
 def test_output(basic_build):
     proc = output = subprocess.Popen([
         "sage",
-        "--source",
+        "--source-path",
         basic_build.src_path,
-        "--build",
+        "--build-path",
         basic_build.bld_path,
         "--output-path",
         "{}/report".format(basic_build.bld_path)
@@ -40,7 +40,7 @@ def test_output(basic_build):
 def test_only_source(source_only_build):
     proc = output = subprocess.Popen([
         "sage",
-        "--source",
+        "--source-path",
         source_only_build.src_path],
         stdout = subprocess.PIPE,
         stderr = subprocess.PIPE)

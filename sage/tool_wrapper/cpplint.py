@@ -4,18 +4,18 @@ import subprocess
 from . import register_wrapper, ToolWrapper
 
 class CppLintWrapper(ToolWrapper):
-    def run(self):
-        args = ["cpplint"]
+    def run(self, ctx):
+        args = [self.get_tool_path(ctx)]
         REPORT = None
-        if self.ctx.output_path:
-            REPORT = open(os.path.join(self.ctx.output_path, "cpplint_report.txt"), "w")
-        args += self.ctx.get_src_list()
-        os.chdir(self.ctx.src_path)
+        if ctx.output_path:
+            REPORT = open(os.path.join(ctx.output_path, "cpplint_report.txt"), "w")
+        args += ctx.get_src_list()
+        os.chdir(ctx.src_path)
         subprocess.call(args, stderr=REPORT)
 
         if REPORT:
             REPORT.close()
-            with open(os.path.join(self.ctx.output_path, "cpplint_report.txt")) as f:
+            with open(os.path.join(ctx.output_path, "cpplint_report.txt")) as f:
                 sys.stderr.write(f.read())
 
 
