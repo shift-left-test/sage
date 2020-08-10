@@ -8,8 +8,8 @@ from .tool_wrapper import *
 logger = logging.getLogger('SAGE')
 
 def run_check_tools(ctx):
-    for tool in ctx.tool_list:
-        wrapper = get_tool_wrapper(tool)(tool)
+    for tool, option in ctx.tool_list:
+        wrapper = get_tool_wrapper(tool)(tool, option)
         if wrapper.get_tool_path(ctx) is None:
             logger.warning("* {} is not installed!!!".format(tool))
             continue

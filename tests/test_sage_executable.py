@@ -2,6 +2,7 @@ import os
 import subprocess
 import shutil
 import pytest
+import sys
 
 def test_basic(basic_build):
     proc = output = subprocess.Popen([
@@ -17,6 +18,26 @@ def test_basic(basic_build):
     (output, error) = proc.communicate()
 
     assert u"cpplint is running..." in str(output)
+    assert u"runtime/indentation_namespace" in str(error)
+
+
+def test_basic_with_tool_option(basic_build):
+    proc = output = subprocess.Popen([
+        "sage",
+        "--source-path",
+        basic_build.src_path,
+        "--build-path",
+        basic_build.bld_path,
+        "--verbose",
+        "cpplint:--filter=-runtime/indentation_namespace",
+        "cppcheck"],
+        stdout = subprocess.PIPE,
+        stderr = subprocess.PIPE)
+
+    (output, error) = proc.communicate()
+
+    assert u"cpplint is running..." in str(output)
+    assert u"runtime/indentation_namespace" not in str(error)
 
 
 def test_output(basic_build):

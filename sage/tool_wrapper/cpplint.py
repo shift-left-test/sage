@@ -5,13 +5,13 @@ from . import register_wrapper, ToolWrapper
 
 class CppLintWrapper(ToolWrapper):
     def run(self, ctx):
-        args = [self.get_tool_path(ctx)]
+        args = [self.get_tool_path(ctx), self.get_tool_option(ctx)]
         REPORT = None
         if ctx.output_path:
             REPORT = open(os.path.join(ctx.output_path, "cpplint_report.txt"), "w")
         args += ctx.get_src_list()
         os.chdir(ctx.src_path)
-        subprocess.call(args, stderr=REPORT)
+        subprocess.call(" ".join(args), shell=True, stderr=REPORT)
 
         if REPORT:
             REPORT.close()

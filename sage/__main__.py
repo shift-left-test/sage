@@ -3,6 +3,7 @@ import logging
 import subprocess
 import os
 import sys
+import textwrap
 
 logger = logging.getLogger('SAGE')
 
@@ -10,15 +11,18 @@ from .tool_wrapper import *
 from .utils import run_check_tools
 
 def main():
-    parser = argparse.ArgumentParser(description="Static Analysis Group Execution")
+    parser = argparse.ArgumentParser(description="Static Analysis Group Execution", formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("--source-path", help="source path")
     parser.add_argument("--build-path", help="build path")
     parser.add_argument("--tool-path", help="if this option is specified, only tools in this path is executed")
     parser.add_argument("--output-path", help="output path")
     parser.add_argument("--target-triple", help="compile target triple")
     parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
-    parser.add_argument("tools", nargs="*", help="Static analysis program list",
-                        default=["cppcheck", "cpplint", "clang-tidy"])
+    parser.add_argument("tools", nargs="*", help=textwrap.dedent("""\
+        Static analysis program list.
+        Tool-specific command-line options separated by colons can be added after the tool name.
+        ex) 'cppcheck:--library=googletest'"""),
+        default=["cppcheck", "cpplint", "clang-tidy"])
 
     args = parser.parse_args()
 

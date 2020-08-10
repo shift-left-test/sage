@@ -6,6 +6,12 @@ import shutil
 MAIN_CPP_CONTENT = """
 #include <stdio.h>
 
+namespace test {
+    class Test {
+
+    };
+}
+
 int main()
 {
     return 0;

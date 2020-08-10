@@ -18,7 +18,7 @@ class ClangTidyWrapper(ToolWrapper):
 
                 os.chdir(compile_command["directory"])
                 src_file = os.path.join(compile_command["directory"], compile_command["file"])
-                args = [self.get_tool_path(ctx), src_file, "--", compile_command["command"]]
+                args = [self.get_tool_path(ctx), self.get_tool_option(ctx), src_file, "--", compile_command["command"]]
 
                 if ctx.target:
                     args.append(" -target {}".format(ctx.target))
