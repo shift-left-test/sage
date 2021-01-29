@@ -36,13 +36,16 @@ class DuploWrapper(ToolWrapper):
         tree = ET.parse(result_path)
         root = tree.getroot()
         for child in root:
-            line_count = child.attrib.get("LineCount")
+            line_count = int(child.attrib.get("LineCount"))
             blocks = []
             for block in child.findall("block"):
+                line_start = int(block.attrib["StartLineNumber"])
+                # TODO: duplo's EndLineNumber has bug. so I used line_count
+                line_end = line_start + line_count - 1
                 blocks.append(CodeBlock(
                     block.attrib["SourceFile"], 
-                    block.attrib["StartLineNumber"], 
-                    block.attrib["EndLineNumber"]))
+                    line_start, 
+                    line_end))
             ctx.add_duplications(line_count, blocks)
        
 register_wrapper("duplo", DuploWrapper)
@@ -54,5 +57,4 @@ if __name__ == "__main__":
     duplo = DuploWrapper("duplo", None)
     duplo.run(ctx)
 
-    print(json.dumps(ctx.duplications, default=lambda x: x.__dict__, indent=4))
-    print(len(ctx.duplications))
+    print(json.dumps(ctx.file_analysis_map, default=lambda x: x.__dict__, indent=4))

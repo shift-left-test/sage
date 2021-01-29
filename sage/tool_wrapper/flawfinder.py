@@ -10,6 +10,7 @@ if __name__ == "__main__":
     __package__ = 'sage.tool_wrapper'
 
 from . import register_wrapper, ToolWrapper
+from ..context import SecurityFlaw
 
 class FlawFinderWrapper(ToolWrapper):
     def run(self, ctx):
@@ -23,7 +24,7 @@ class FlawFinderWrapper(ToolWrapper):
         with Popen(args, stdout=PIPE, stderr=PIPE, universal_newlines=True) as proc:
             results = csv.DictReader(proc.stdout)
             for row in results:
-                ctx.add_security_flaw(row)
+                ctx.add_security_flaw(SecurityFlaw(row))
 
 
 register_wrapper("flawfinder", FlawFinderWrapper)
@@ -35,4 +36,4 @@ if __name__ == "__main__":
     flawfinder = FlawFinderWrapper("flawfinder", None)
     flawfinder.run(ctx)
 
-    print(json.dumps(ctx.securities, default=lambda x: x.__dict__, indent=4))
+    print(json.dumps(ctx.file_analysis_map, default=lambda x: x.__dict__, indent=4))

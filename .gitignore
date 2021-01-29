@@ -4,6 +4,7 @@
 /tmp
 /*.egg-info
 /.tox
+/build
 __pycache__
 *.pyc
 CMakeFiles

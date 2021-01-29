@@ -65,4 +65,4 @@ if __name__ == "__main__":
     clangtidy = ClangTidyWrapper("clang-tidy", None)
     clangtidy.run(ctx)
 
-    print(json.dumps(ctx.violations, default=lambda x: x.__dict__, indent=4))
+    print(json.dumps(ctx.file_analysis_map, default=lambda x: x.__dict__, indent=4))

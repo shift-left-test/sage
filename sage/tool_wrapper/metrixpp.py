@@ -53,7 +53,7 @@ class MetrixPPWrapper(ToolWrapper):
                 region_ = row["region"]
                 type_ = row["type"]
 
-                metrics = ctx.metrics.get_file_metrics(file_name_)
+                metrics = ctx.get_file_analysis(file_name_)
 
                 for key, value in row.items():
                     if len(value) == 0 or key in ["file", "region", "type", "modified", "line start", "line end" ]:
@@ -102,4 +102,4 @@ if __name__ == "__main__":
     metrixpp = MetrixPPWrapper("metrix++", None)
     metrixpp.run(ctx)
 
-    print(json.dumps(ctx.metrics, default=lambda x: x.__dict__, indent=4))
+    print(json.dumps(ctx.file_analysis_map, default=lambda x: x.__dict__, indent=4))

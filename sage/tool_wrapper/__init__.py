@@ -48,6 +48,6 @@ class ToolWrapper():
 
     def run(self, ctx):
         pass
-
+    run.__annotations__ = {'ctx': WrapperContext}
 
 

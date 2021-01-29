@@ -3,6 +3,7 @@ import re
 from enum import Enum
 import json
 
+from .utils import *
 
 class ToolType(Enum):
     METRICS = 1
@@ -11,7 +12,7 @@ class ToolType(Enum):
     SECURITY = 4
 
 
-class FileMetricsDetail(object):
+class FileAnalysis(object):
     def __init__(self):
         self.total_lines = 0
         self.code_lines = 0
@@ -37,57 +38,63 @@ class FileMetricsDetail(object):
         self.violations = []
         self.duplications = []
 
-
-class Metrics(object):
-    def __init__(self):
-        self.files = {}
-
-    def get_file_metrics(self, file_name):
-        if file_name not in self.files:
-            self.files[file_name] = FileMetricsDetail()
-
-        return self.files.get(file_name, None)
+        self.duplication_ranges = []
 
 
-class CodeBlock(object):
-    def __init__(self, file_name, start, end):
-        self.file_name = file_name
-        self.start = start
-        self.end = end
+    def add_duplications(self, lines, block, blocks):
+        merged = False
+        merged_ranges = []
+        last_range = None
 
+        for dup_range in self.duplication_ranges:
+            if not merged:
+                merged = dup_range.check_merge(block)
 
-class SecurityFlaw(object):
-    def __init__(self, data):
-        self.file_name = data.get("File")
-        self.line = data.get("Line")
-        self.column = data.get("Column")
-        self.level = data.get("Level")
-        self.category = data.get("Category")
-        self.name = data.get("Name")
-        self.warning = data.get("Warning")
-        self.suggestion = data.get("Suggestion")
-        self.note = data.get("Note")
-        self.cwes = data.get("CWEs")
-        self.context = data.get("Context")
-        self.fingerprint = data.get("Fingerprint")
+            if last_range:
+                if not merged and block.start > last_range.end and block.end < dup_range.start:
+                    merged = True
+                    merged_ranges.append(block)
+                if not last_range.check_merge(dup_range):
+                    merged_ranges.append(dup_range)
+                    last_range = dup_range
+            else:
+                merged_ranges.append(dup_range)
+                last_range = dup_range
 
+        if not merged:
+            merged_ranges.append(block)
 
-class ViolationIssue(object):
-    def __init__(self, id, severity, msg, verbose=None, cwe=None, filename=None, line=None, column=None):
-        self.id = id
-        self.severity = severity
-        self.msg = msg
-        self.verbose = verbose
-        self.cwe = cwe
-        self.filename = filename
-        self.line = line
-        self.column = column
+        self.duplication_ranges = merged_ranges
 
-    def append_verbose(self, text):
-        if self.verbose == None:
-            self.verbose = text
+    
+    def get_cyclomatic_complexity(self):
+        if self.region_cyclomatic_complexity:
+            return int(max(self.region_cyclomatic_complexity, key=lambda i : int(i[2]))[2])
         else:
-            self.verbose += text
+            return 0
+    
+
+    def get_maxindent_complexity(self):
+        if self.region_maxindent_complexity:
+            return int(max(self.region_maxindent_complexity, key=lambda i : int(i[2]))[2])
+        else:
+            return 0
+
+    def get_maintainability_index(self):
+        if self.region_maintainability_index:
+            return int(max(self.region_maintainability_index, key=lambda i : int(i[2]))[2])
+        else:
+            return 0
+
+
+    def get_duplications(self):
+        result = 0
+        for dup_range in self.duplication_ranges:
+            assert (dup_range.start <= dup_range.end), "start: {}, end: {}".format(dup_range.start, dup_range.end)
+            result += dup_range.end - dup_range.start + 1
+        
+        return result
+
 
 class WrapperContext(object):
     src_list = None
@@ -115,7 +122,14 @@ class WrapperContext(object):
             os.makedirs(self.output_path)
 
         # data
-        self.metrics = Metrics()
+        self.file_analysis_map = {}
+
+
+    def get_file_analysis(self, file_name):
+        if file_name not in self.file_analysis_map:
+            self.file_analysis_map[file_name] = FileAnalysis()
+
+        return self.file_analysis_map.get(file_name, None)
 
 
     def get_src_list(self):
@@ -151,18 +165,13 @@ class WrapperContext(object):
 
 
     def add_duplications(self, line_count, blocks):
-        file_names = set()
         for block in blocks:
-            if block.file_name not in file_names:
-                self.metrics.get_file_metrics(block.file_name).duplications.append((line_count, blocks))
-                # TODO: check line overlap with other duplications in same file.
-                file_names.add(block.file_name)
+            self.get_file_analysis(block.file_name).add_duplications(line_count, block, blocks)
 
-    def add_security_flaw(self, data):
-        flaw = SecurityFlaw(data)
-        self.metrics.get_file_metrics(flaw.file_name).security_flaws.append(flaw)
+    def add_security_flaw(self, flaw):
+        self.get_file_analysis(flaw.file_name).security_flaws.append(flaw)
            
 
     def add_violation_issue(self, issue):
-        self.metrics.get_file_metrics(issue.filename).violations.append(issue)
+        self.get_file_analysis(issue.filename).violations.append(issue)
 
