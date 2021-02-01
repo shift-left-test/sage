@@ -14,11 +14,11 @@ from ..context import SecurityFlaw
 
 class FlawFinderWrapper(ToolWrapper):
     def run(self, ctx):
-        os.chdir("/home/dennis/work/sentinel")
+        os.chdir(ctx.src_path)
         args = [
             "flawfinder",
             "--csv",
-            "/home/dennis/work/sentinel"
+            ctx.src_path
         ]
 
         with Popen(args, stdout=PIPE, stderr=PIPE, universal_newlines=True) as proc:
