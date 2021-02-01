@@ -28,11 +28,11 @@ class CppCheckWrapper(ToolWrapper):
             for issue in root.iter('error'):
                 for location in issue.iter('location'):
                     ctx.add_violation_issue(ViolationIssue(
-                        issue.attrib['id'], 
-                        issue.attrib['severity'],
-                        issue.attrib['msg'],
-                        issue.attrib['verbose'],
-                        issue.attrib['cwe'],
+                        issue.attrib.get('id', None), 
+                        issue.attrib.get('severity', None),
+                        issue.attrib.get('msg', None),
+                        issue.attrib.get('verbose', None),
+                        issue.attrib.get('cwe', None),
                         location.attrib['file'],
                         location.attrib['line'],
                         location.attrib['column']
