@@ -23,6 +23,7 @@ class Report(object):
             maxindent_complexity = file_analysis.get_maxindent_complexity()
             maintainability_index = file_analysis.get_maintainability_index()
             duplications = file_analysis.get_duplications()
+            total_lines = float(file_analysis.total_lines)
 
             self.files_summary[rel_file_name] = [
                 file_analysis.total_lines,
@@ -31,7 +32,7 @@ class Report(object):
                 cyclomatic_complexity,
                 maxindent_complexity,
                 maintainability_index,
-                duplications / float(file_analysis.total_lines) * 100,
+                duplications / total_lines * 100 if total_lines > 0 else 0,
                 len(file_analysis.security_flaws),
                 len(file_analysis.violations)
             ]
