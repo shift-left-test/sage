@@ -16,7 +16,8 @@ setuptools.setup(
         "Operating System :: OS Independent"
     ],
     install_requires=[
-        "compiledb"
+        "compiledb",
+        "texttable"
     ],
     entry_points={
         'console_scripts': [
