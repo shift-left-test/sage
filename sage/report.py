@@ -72,7 +72,7 @@ class Report(object):
             self.project_cyclomatic_complexity,
             self.project_maxindent_complexity,
             self.project_maintainindex,
-            self.project_duplications / self.project_lines * 100,
+            self.project_duplications / self.project_lines * 100 if self.project_lines > 0 else 0,
             self.project_security_flaws,
             self.project_violations
         ])
