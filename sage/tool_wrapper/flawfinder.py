@@ -21,10 +21,24 @@ class FlawFinderWrapper(ToolWrapper):
             ctx.src_path
         ]
 
-        with Popen(args, stdout=PIPE, stderr=PIPE, universal_newlines=True) as proc:
-            results = csv.DictReader(proc.stdout)
-            for row in results:
-                ctx.add_security_flaw(SecurityFlaw(row))
+        proc = Popen(args, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+        results = csv.DictReader(proc.stdout)
+        for row in results:
+            ctx.add_security_flaw(SecurityFlaw(
+                toolname="flawfinder",
+                filename=row.get("File"),
+                line=row.get("Line"),
+                column=row.get("Column"),
+                name=row.get("Name"),
+                severity=row.get("Level"),
+                category=row.get("Category"),
+                warning=row.get("Warning"),
+                suggestion=row.get("Suggestion"),
+                note=row.get("Note"),
+                cwes=row.get("CWEs"),
+                context=row.get("Context"),
+                fingerprint=row.get("Fingerprint")
+            ))
 
 
 register_wrapper("flawfinder", FlawFinderWrapper)

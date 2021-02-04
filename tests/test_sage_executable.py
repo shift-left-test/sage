@@ -4,8 +4,9 @@ import shutil
 import pytest
 import sys
 
+
 def test_basic(basic_build):
-    proc = output = subprocess.Popen([
+    proc = subprocess.Popen([
         "sage",
         "--source-path",
         basic_build.src_path,
@@ -17,12 +18,11 @@ def test_basic(basic_build):
 
     (output, error) = proc.communicate()
 
-    assert u"cpplint is running..." in str(output)
-    assert u"runtime/indentation_namespace" in str(error)
+    assert u"cpplint is running..." in str(output), str(output)
 
 
 def test_basic_with_tool_option(basic_build):
-    proc = output = subprocess.Popen([
+    proc = subprocess.Popen([
         "sage",
         "--source-path",
         basic_build.src_path,
@@ -41,7 +41,7 @@ def test_basic_with_tool_option(basic_build):
 
 
 def test_output(basic_build):
-    proc = output = subprocess.Popen([
+    proc = subprocess.Popen([
         "sage",
         "--source-path",
         basic_build.src_path,
@@ -56,11 +56,11 @@ def test_output(basic_build):
     
     (output, error) = proc.communicate()
 
-    assert os.path.exists("{}/report/cpplint_report.txt".format(basic_build.bld_path))
+    assert os.path.exists("{}/report/sage_report.json".format(basic_build.bld_path))
 
 
 def test_invalid_tool_path(basic_build):
-    proc = output = subprocess.Popen([
+    proc = subprocess.Popen([
         "sage",
         "--source-path",
         basic_build.src_path,
@@ -78,7 +78,7 @@ def test_invalid_tool_path(basic_build):
 
 
 def test_invalid_build_path(basic_build):
-    proc = output = subprocess.Popen([
+    proc = subprocess.Popen([
         "sage",
         "--source-path",
         basic_build.src_path,
@@ -94,7 +94,7 @@ def test_invalid_build_path(basic_build):
 
 
 def test_only_source(source_only_build):
-    proc = output = subprocess.Popen([
+    proc = subprocess.Popen([
         "sage",
         "--source-path",
         source_only_build.src_path,

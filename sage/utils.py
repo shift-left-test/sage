@@ -26,32 +26,38 @@ class CodeBlock(object):
         return False
 
 
-class SecurityFlaw(object):
-    def __init__(self, data):
-        self.file_name = data.get("File")
-        self.line = data.get("Line")
-        self.column = data.get("Column")
-        self.level = data.get("Level")
-        self.category = data.get("Category")
-        self.name = data.get("Name")
-        self.warning = data.get("Warning")
-        self.suggestion = data.get("Suggestion")
-        self.note = data.get("Note")
-        self.cwes = data.get("CWEs")
-        self.context = data.get("Context")
-        self.fingerprint = data.get("Fingerprint")
-
-
-class ViolationIssue(object):
-    def __init__(self, id, severity, msg, verbose=None, cwe=None, filename=None, line=None, column=None):
-        self.id = id
+class Issue(object):
+    def __init__(self, toolname, filename, line, column, name, severity):
+        self.file_name = filename
+        self.tool_name = toolname
+        self.line = line
+        self.column = column
+        self.name = name
         self.severity = severity
+    __init__.__annotations__ = {'severity':int}
+
+
+class SecurityFlaw(Issue):
+    def __init__(self, toolname, filename, line, column, name, severity, category, warning, suggestion, note, cwes, context, fingerprint):
+        super(SecurityFlaw, self).__init__(toolname, filename, line, column, name, severity)
+
+        self.category = category
+        self.warning = warning
+        self.suggestion = suggestion
+        self.note = note
+        self.cwes = cwes
+        self.context = context
+        self.fingerprint = fingerprint
+
+
+class ViolationIssue(Issue):
+    def __init__(self, toolname, filename, line, column, id=None, severity=None, msg=None, verbose=None, cwe=None):
+        super(ViolationIssue, self).__init__(toolname, filename, line, column, id, severity)
+
         self.msg = msg
         self.verbose = verbose
         self.cwe = cwe
-        self.filename = filename
-        self.line = line
-        self.column = column
+
 
     def append_verbose(self, text):
         if self.verbose == None:

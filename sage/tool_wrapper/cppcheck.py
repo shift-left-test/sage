@@ -23,20 +23,21 @@ class CppCheckWrapper(ToolWrapper):
             "--enable=all"
         ]
 
-        with Popen(" ".join(args), stdout=PIPE, stderr=PIPE, shell=True) as proc:
-            root = ET.fromstring(proc.stderr.read())
-            for issue in root.iter('error'):
-                for location in issue.iter('location'):
-                    ctx.add_violation_issue(ViolationIssue(
-                        issue.attrib.get('id', None), 
-                        issue.attrib.get('severity', None),
-                        issue.attrib.get('msg', None),
-                        issue.attrib.get('verbose', None),
-                        issue.attrib.get('cwe', None),
-                        location.attrib['file'],
-                        location.attrib['line'],
-                        location.attrib['column']
-                    ))
+        proc = Popen(" ".join(args), stdout=PIPE, stderr=PIPE, shell=True)
+        root = ET.fromstring(proc.stderr.read())
+        for issue in root.iter('error'):
+            for location in issue.iter('location'):
+                ctx.add_violation_issue(ViolationIssue(
+                    "cppcheck",
+                    filename=location.attrib['file'],
+                    line=location.attrib['line'],
+                    column=location.attrib['column'],
+                    id=issue.attrib.get('id', None), 
+                    severity=issue.attrib.get('severity', None),
+                    msg=issue.attrib.get('msg', None),
+                    verbose=issue.attrib.get('verbose', None),
+                    cwe=issue.attrib.get('cwe', None)
+                ))
 
 
 register_wrapper("cppcheck", CppCheckWrapper)
@@ -48,4 +49,4 @@ if __name__ == "__main__":
     cppcheck = CppCheckWrapper("cppcheck", None)
     cppcheck.run(ctx)
 
-    print(json.dumps(ctx.violations, default=lambda x: x.__dict__, indent=4))
+    print(json.dumps(ctx.file_analysis_map, default=lambda x: x.__dict__, indent=4))

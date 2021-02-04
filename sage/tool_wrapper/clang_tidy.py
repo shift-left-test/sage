@@ -40,12 +40,13 @@ class ClangTidyWrapper(ToolWrapper):
                         m = self.re_log.match(line)
                         if m:
                             issue = ViolationIssue(
+                                "clang-tidy",
                                 filename=m.group(1),
                                 line=m.group(2),
                                 column=m.group(3),
+                                id=m.group('id'),
                                 severity=m.group(4),
-                                msg=m.group(5),
-                                id=m.group('id')
+                                msg=m.group(5)
                             )
                             ctx.add_violation_issue(issue)
                         else:

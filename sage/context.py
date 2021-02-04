@@ -168,10 +168,13 @@ class WrapperContext(object):
         for block in blocks:
             self.get_file_analysis(block.file_name).add_duplications(line_count, block, blocks)
 
+
     def add_security_flaw(self, flaw):
         self.get_file_analysis(flaw.file_name).security_flaws.append(flaw)
-           
+    add_security_flaw.__annotations__ = {'flaw': SecurityFlaw}       
+
 
     def add_violation_issue(self, issue):
-        self.get_file_analysis(issue.filename).violations.append(issue)
+        self.get_file_analysis(issue.file_name).violations.append(issue)
 
+    add_violation_issue.__annotations__ = {'issue': ViolationIssue}

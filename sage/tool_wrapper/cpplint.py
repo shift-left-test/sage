@@ -24,19 +24,21 @@ class CppLintWrapper(ToolWrapper):
                 filename
             ]
 
-            with Popen(" ".join(args), shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True) as proc:
-                for line in proc.stderr.readlines():
-                    m = self.re_log.match(line)
-                    if m:
-                        ctx.add_violation_issue(ViolationIssue(
-                            filename=m.group(1),
-                            line=m.group(2),
-                            msg=m.group(3),
-                            id=m.group(4),
-                            severity=m.group(5)
-                        ))
-                    else:
-                        raise Exception("not match")
+            proc = Popen(" ".join(args), shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+            for line in proc.stderr.readlines():
+                m = self.re_log.match(line)
+                if m:
+                    ctx.add_violation_issue(ViolationIssue(
+                        toolname="cpplint",
+                        filename=m.group(1),
+                        line=m.group(2),
+                        column=None,
+                        id=m.group(4),
+                        severity=m.group(5),
+                        msg=m.group(3)
+                    ))
+                else:
+                    raise Exception("not match")
 
 
 register_wrapper("cpplint", CppLintWrapper)
@@ -48,4 +50,4 @@ if __name__ == "__main__":
     cpplint = CppLintWrapper("cpplint", None)
     cpplint.run(ctx)
 
-    print(json.dumps(ctx.violations, default=lambda x: x.__dict__, indent=4))
+    print(json.dumps(ctx.file_analysis_map, default=lambda x: x.__dict__, indent=4))

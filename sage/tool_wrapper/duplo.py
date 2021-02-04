@@ -25,13 +25,13 @@ class DuploWrapper(ToolWrapper):
             result_path
         ]
 
-        with Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE, universal_newlines=True) as proc:
-            cppfiles = \
-                glob.glob(os.path.join(ctx.src_path, "**/*.c")) + \
-                glob.glob(os.path.join(ctx.src_path, "**/*.cpp"))
+        proc=Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+        cppfiles = \
+            glob.glob(os.path.join(ctx.src_path, "**/*.c")) + \
+            glob.glob(os.path.join(ctx.src_path, "**/*.cpp"))
 
-            proc.stdin.write("\n".join(cppfiles))
-            proc.communicate()
+        proc.stdin.write("\n".join(cppfiles))
+        proc.communicate()
 
         tree = ET.parse(result_path)
         root = tree.getroot()
