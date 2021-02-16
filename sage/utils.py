@@ -27,20 +27,19 @@ class CodeBlock(object):
 
 
 class Issue(object):
-    def __init__(self, toolname, filename, line, column, name, severity):
+    def __init__(self, toolname, filename, line, column, name):
         self.file_name = filename
         self.tool_name = toolname
         self.line = line
         self.column = column
         self.name = name
-        self.severity = severity
-    __init__.__annotations__ = {'severity':int}
 
 
 class SecurityFlaw(Issue):
     def __init__(self, toolname, filename, line, column, name, severity, category, warning, suggestion, note, cwes, context, fingerprint):
-        super(SecurityFlaw, self).__init__(toolname, filename, line, column, name, severity)
+        super(SecurityFlaw, self).__init__(toolname, filename, line, column, name)
 
+        self.severity = int(severity)
         self.category = category
         self.warning = warning
         self.suggestion = suggestion
@@ -52,8 +51,9 @@ class SecurityFlaw(Issue):
 
 class ViolationIssue(Issue):
     def __init__(self, toolname, filename, line, column, id=None, severity=None, msg=None, verbose=None, cwe=None):
-        super(ViolationIssue, self).__init__(toolname, filename, line, column, id, severity)
+        super(ViolationIssue, self).__init__(toolname, filename, line, column, id)
 
+        self.severity = severity
         self.msg = msg
         self.verbose = verbose
         self.cwe = cwe

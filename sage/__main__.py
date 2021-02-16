@@ -30,6 +30,7 @@ def generate_report(ctx):
     report = Report(ctx)
 
     table = Texttable(max_width=0)
+    table.set_deco(Texttable.HEADER | Texttable.BORDER | Texttable.VLINES)
     table.add_rows(report.get_summary_table())
 
     print(table.draw())

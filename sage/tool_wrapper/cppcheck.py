@@ -10,9 +10,18 @@ if __name__ == "__main__":
     __package__ = 'sage.tool_wrapper'
 
 from . import register_wrapper, ToolWrapper
-from ..context import ViolationIssue
+from ..context import ViolationIssue, Severity
 
 class CppCheckWrapper(ToolWrapper):
+    severity_map = {
+        "error": Severity.MAJOR,
+        "warning": Severity.MINOR,
+        "style": Severity.INFO,
+        "performance": Severity.INFO,
+        "portability": Severity.INFO,
+        "information": Severity.INFO
+    }
+
     def run(self, ctx):
         os.chdir(ctx.work_path)
         args = [
@@ -33,7 +42,7 @@ class CppCheckWrapper(ToolWrapper):
                     line=location.attrib['line'],
                     column=location.attrib['column'],
                     id=issue.attrib.get('id', None), 
-                    severity=issue.attrib.get('severity', None),
+                    severity=self.severity_map.get(issue.attrib.get('severity', None), Severity.UNKNOWN),
                     msg=issue.attrib.get('msg', None),
                     verbose=issue.attrib.get('verbose', None),
                     cwe=issue.attrib.get('cwe', None)

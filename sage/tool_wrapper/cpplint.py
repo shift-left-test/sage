@@ -10,10 +10,17 @@ if __name__ == "__main__":
     __package__ = 'sage.tool_wrapper'
 
 from . import register_wrapper, ToolWrapper
-from ..context import ViolationIssue
+from ..context import ViolationIssue, Severity
 
 class CppLintWrapper(ToolWrapper):
     re_log = re.compile(r'^(.*):(\d+):(.*)\[(.*)\]\s+\[(\d+)\]$')
+    severity_map = {
+        "1" : Severity.MAJOR,
+        "2" : Severity.MINOR,
+        "3" : Severity.INFO,
+        "4" : Severity.INFO,
+        "5" : Severity.INFO
+    }
 
     def run(self, ctx):
         os.chdir(ctx.src_path)
@@ -34,7 +41,7 @@ class CppLintWrapper(ToolWrapper):
                         line=m.group(2),
                         column=None,
                         id=m.group(4),
-                        severity=m.group(5),
+                        severity=self.severity_map.get(m.group(5), Severity.UNKNOWN),
                         msg=m.group(3)
                     ))
                 else:

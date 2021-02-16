@@ -9,8 +9,8 @@ class Report(object):
     project_maxindent_complexity = 0
     project_maintainindex = 0
     project_duplications = 0
-    project_security_flaws = 0
-    project_violations = 0
+    project_security_flaws = [0,0,0,0,0,0]
+    project_violations = [0,0,0,0]
 
     def __init__(self, ctx):
         self.files_detail = {}
@@ -33,8 +33,8 @@ class Report(object):
                 maxindent_complexity,
                 maintainability_index,
                 duplications / total_lines * 100 if total_lines > 0 else 0,
-                len(file_analysis.security_flaws),
-                len(file_analysis.violations)
+                "/".join(str(len(x)) for x in file_analysis.security_flaws),
+                "/".join(str(len(x)) for x in file_analysis.violations)
             ]
         
             self.project_lines += int(file_analysis.total_lines)
@@ -44,8 +44,10 @@ class Report(object):
             self.project_maxindent_complexity = max([self.project_maxindent_complexity, maxindent_complexity])
             self.project_maintainindex = max([self.project_maintainindex, maintainability_index])
             self.project_duplications += duplications
-            self.project_security_flaws += len(file_analysis.security_flaws)
-            self.project_violations += len(file_analysis.violations)
+            for index in range(len(self.project_security_flaws)):
+                self.project_security_flaws[index] += len(file_analysis.security_flaws[index])
+            for index in range(len(self.project_violations)):
+                self.project_violations[index] += len(file_analysis.violations[index])
 
 
     def get_summary_table(self):
@@ -59,13 +61,13 @@ class Report(object):
             "maintainability\nindex",
             "duplications",
             "security\nflaws",
-            "violations"
+            "violations\nmajor/minor/info"
         ]]
         for file_name, file_summary in self.files_summary.items():
             result_table.append([file_name] + file_summary)
 
         result_table.append([
-            "",
+            "Total:",
             self.project_lines,
             self.project_loc,
             self.project_comments,
@@ -73,8 +75,8 @@ class Report(object):
             self.project_maxindent_complexity,
             self.project_maintainindex,
             self.project_duplications / self.project_lines * 100 if self.project_lines > 0 else 0,
-            self.project_security_flaws,
-            self.project_violations
+            "/".join(str(x) for x in self.project_security_flaws),
+            "/".join(str(x) for x in self.project_violations)
         ])
 
         return result_table

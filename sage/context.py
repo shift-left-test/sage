@@ -12,6 +12,13 @@ class ToolType(Enum):
     SECURITY = 4
 
 
+class Severity(Enum):
+    MAJOR = 0
+    MINOR = 1
+    INFO = 2
+    UNKNOWN = 3
+
+
 class FileAnalysis(object):
     def __init__(self):
         self.total_lines = 0
@@ -34,8 +41,10 @@ class FileAnalysis(object):
         self.region_types = []
         self.region_maintainability_index = []
 
-        self.security_flaws = []
-        self.violations = []
+        # Major, Minor, Info, Unknown
+        self.violations = [[],[],[],[]]
+        # 0, 1, 2, 3, 4, 5
+        self.security_flaws = [[],[],[],[],[],[]]
         self.duplications = []
 
         self.duplication_ranges = []
@@ -170,11 +179,11 @@ class WrapperContext(object):
 
 
     def add_security_flaw(self, flaw):
-        self.get_file_analysis(flaw.file_name).security_flaws.append(flaw)
+        print(json.dumps(flaw.__dict__, indent=4))
+        self.get_file_analysis(flaw.file_name).security_flaws[flaw.severity].append(flaw)
     add_security_flaw.__annotations__ = {'flaw': SecurityFlaw}       
 
 
     def add_violation_issue(self, issue):
-        self.get_file_analysis(issue.file_name).violations.append(issue)
-
+        self.get_file_analysis(issue.file_name).violations[issue.severity.value].append(issue)
     add_violation_issue.__annotations__ = {'issue': ViolationIssue}

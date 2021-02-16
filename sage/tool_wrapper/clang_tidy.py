@@ -10,10 +10,18 @@ if __name__ == "__main__":
     __package__ = 'sage.tool_wrapper'
 
 from . import register_wrapper, ToolWrapper
-from ..context import ViolationIssue
+from ..context import ViolationIssue, Severity
 
 class ClangTidyWrapper(ToolWrapper):
     re_log = re.compile(r'^(.*):(\d+):(\d+):\s+(.*):(.*)(\s\[(?P<id>.*)\]|)$')
+    severity_map = {
+        "ignored" : Severity.INFO,
+        "note" : Severity.INFO,
+        "remark" : Severity.INFO,
+        "warning" : Severity.MINOR,
+        "error" : Severity.MAJOR,
+        "fatal" : Severity.MAJOR
+    }
 
     def run(self, ctx):
         with open(os.path.join(ctx.work_path, "compile_commands.json")) as fcmd:
@@ -45,7 +53,7 @@ class ClangTidyWrapper(ToolWrapper):
                                 line=m.group(2),
                                 column=m.group(3),
                                 id=m.group('id'),
-                                severity=m.group(4),
+                                severity=self.severity_map.get(m.group(4), Severity.UNKNOWN),
                                 msg=m.group(5)
                             )
                             ctx.add_violation_issue(issue)
