@@ -37,7 +37,7 @@ def generate_report(ctx):
 
     if ctx.output_path:
         with open(os.path.join(ctx.output_path, "sage_report.json"), "w") as f:
-            json.dump(report, f, default=lambda x: x.__dict__, indent=4)
+            json.dump(report, f, default=lambda x: getattr(x, "__dict__", None), indent=4)
 
 
 generate_report.__annotations__ = {'ctx': WrapperContext}
