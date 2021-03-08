@@ -60,7 +60,7 @@ class FileAnalysis(object):
     def to_report_data(self):
         data = {}
 
-        data["total_lilnes"] = self.total_lines
+        data["total_lines"] = self.total_lines
         data["code_lines"] = self.code_lines
         data["comment_lines"] = self.comment_lines
         data["clones"] = self.duplications
