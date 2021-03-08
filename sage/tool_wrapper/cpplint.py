@@ -15,11 +15,11 @@ from ..context import ViolationIssue, Severity
 class CppLintWrapper(ToolWrapper):
     re_log = re.compile(r'^(.*):(\d+):(.*)\[(.*)\]\s+\[(\d+)\]$')
     severity_map = {
-        "1" : Severity.MAJOR,
-        "2" : Severity.MINOR,
-        "3" : Severity.INFO,
-        "4" : Severity.INFO,
-        "5" : Severity.INFO
+        "1" : Severity.Major,
+        "2" : Severity.Minor,
+        "3" : Severity.Info,
+        "4" : Severity.Info,
+        "5" : Severity.Info
     }
 
     def run(self, ctx):
@@ -41,7 +41,8 @@ class CppLintWrapper(ToolWrapper):
                         line=m.group(2),
                         column=None,
                         id=m.group(4),
-                        severity=self.severity_map.get(m.group(5), Severity.UNKNOWN),
+                        priority=self.severity_map.get(m.group(5), Severity.Unknown),
+                        severity=m.group(5),
                         msg=m.group(3)
                     ))
                 else:

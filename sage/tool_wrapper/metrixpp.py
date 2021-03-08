@@ -10,6 +10,7 @@ if __name__ == "__main__":
     __package__ = 'sage.tool_wrapper'
 
 from . import register_wrapper, ToolWrapper
+from ..utils import RegionValue
 
 # TODO: use tmp_dir matrixpp.db
 class MetrixPPWrapper(ToolWrapper):
@@ -59,9 +60,9 @@ class MetrixPPWrapper(ToolWrapper):
                 if len(value) == 0 or key in ["file", "region", "type", "modified", "line start", "line end" ]:
                     continue
                 elif key == "std.code.complexity:cyclomatic":
-                    metrics.region_cyclomatic_complexity.append((type_, region_, value))
+                    metrics.region_cyclomatic_complexity.append(RegionValue(type_, region_, value))
                 elif key == "std.code.complexity:maxindent":
-                    metrics.region_maxindent_complexity.append((type_, region_, value))
+                    metrics.region_maxindent_complexity.append(RegionValue(type_, region_, value))
                 elif key == "std.code.filelines:code":
                     metrics.code_lines = value
                 elif key == "std.code.filelines:comments":
@@ -69,27 +70,28 @@ class MetrixPPWrapper(ToolWrapper):
                 elif key == "std.code.filelines:total":
                     metrics.total_lines = value
                 elif key == "std.code.lines:code":
-                    metrics.region_code_lines.append((type_, region_, value))
+                    metrics.region_code_lines.append(RegionValue(type_, region_, value))
                 elif key == "std.code.magic:numbers":
-                    metrics.region_magic_numbers.append((type_, region_, value))
+                    metrics.region_magic_numbers.append(RegionValue(type_, region_, value))
                 elif key == "std.code.member:classes":
-                    metrics.region_classes.append((type_, region_, value))
+                    metrics.classes += int(value)
+                    metrics.region_classes.append(RegionValue(type_, region_, value))
                 elif key == "std.code.member:fields":
-                    metrics.region_fields.append((type_, region_, value))
+                    metrics.region_fields.append(RegionValue(type_, region_, value))
                 elif key == "std.code.member:globals":
-                    metrics.region_globals.append((type_, region_, value))
+                    metrics.region_globals.append(RegionValue(type_, region_, value))
                 elif key == "std.code.member:interfaces":
-                    metrics.region_interfaces.append((type_, region_, value))
+                    metrics.region_interfaces.append(RegionValue(type_, region_, value))
                 elif key == "std.code.member:methods":
-                    metrics.region_methods.append((type_, region_, value))
+                    metrics.region_methods.append(RegionValue(type_, region_, value))
                 elif key == "std.code.member:namespaces":
-                    metrics.region_namespaces.append((type_, region_, value))
+                    metrics.region_namespaces.append(RegionValue(type_, region_, value))
                 elif key == "std.code.member:structs":
-                    metrics.region_structs.append((type_, region_, value))
+                    metrics.region_structs.append(RegionValue(type_, region_, value))
                 elif key == "std.code.member:types":
-                    metrics.region_types.append((type_, region_, value))
+                    metrics.region_types.append(RegionValue(type_, region_, value))
                 elif key == "std.code.mi:simple":
-                    metrics.region_maintainability_index.append((type_, region_, value))
+                    metrics.region_maintainability_index.append(RegionValue(type_, region_, value))
                 else:
                     raise Exception("Unknown metrics key: {}".format(key))
 

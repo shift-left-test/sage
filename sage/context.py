@@ -13,10 +13,10 @@ class ToolType(Enum):
 
 
 class Severity(Enum):
-    MAJOR = 0
-    MINOR = 1
-    INFO = 2
-    UNKNOWN = 3
+    Major = 0
+    Minor = 1
+    Info = 2
+    Unknown = 3
 
 
 class FileAnalysis(object):
@@ -24,6 +24,7 @@ class FileAnalysis(object):
         self.total_lines = 0
         self.code_lines = 0
         self.comment_lines = 0
+        self.classes = 0
 
         # tuple (type, region, count)
         self.region_cyclomatic_complexity = []
@@ -41,16 +42,38 @@ class FileAnalysis(object):
         self.region_types = []
         self.region_maintainability_index = []
 
-        # Major, Minor, Info, Unknown
-        self.violations = [[],[],[],[]]
+        self.violations = {
+            Severity.Major.name: [],
+            Severity.Minor.name: [],
+            Severity.Info.name: [],
+            Severity.Unknown.name: []
+        }
+
         # 0, 1, 2, 3, 4, 5
         self.security_flaws = [[],[],[],[],[],[]]
         self.duplications = []
 
+        # temporary storage for calculate duplication rate
         self.duplication_ranges = []
 
 
+    def to_report_data(self):
+        data = {}
+
+        data["total_lilnes"] = self.total_lines
+        data["code_lines"] = self.code_lines
+        data["comment_lines"] = self.comment_lines
+        data["clones"] = self.duplications
+        data["classes"] = self.classes
+        data["cyclomatic_complexities"] = self.region_cyclomatic_complexity
+        data["violations"] = self.violations
+
+        return data
+
+
     def add_duplications(self, lines, block, blocks):
+        self.duplications.append(blocks)
+
         merged = False
         merged_ranges = []
         last_range = None
@@ -78,20 +101,20 @@ class FileAnalysis(object):
     
     def get_cyclomatic_complexity(self):
         if self.region_cyclomatic_complexity:
-            return int(max(self.region_cyclomatic_complexity, key=lambda i : int(i[2]))[2])
+            return int(max(self.region_cyclomatic_complexity, key=lambda i : int(i.value)).value)
         else:
             return 0
     
 
     def get_maxindent_complexity(self):
         if self.region_maxindent_complexity:
-            return int(max(self.region_maxindent_complexity, key=lambda i : int(i[2]))[2])
+            return int(max(self.region_maxindent_complexity, key=lambda i : int(i.value)).value)
         else:
             return 0
 
     def get_maintainability_index(self):
         if self.region_maintainability_index:
-            return int(max(self.region_maintainability_index, key=lambda i : int(i[2]))[2])
+            return int(max(self.region_maintainability_index, key=lambda i : int(i.value)).value)
         else:
             return 0
 
@@ -174,16 +197,16 @@ class WrapperContext(object):
 
 
     def add_duplications(self, line_count, blocks):
+        # Each block is overlapped with each other
         for block in blocks:
             self.get_file_analysis(block.file_name).add_duplications(line_count, block, blocks)
 
 
     def add_security_flaw(self, flaw):
-        print(json.dumps(flaw.__dict__, indent=4))
         self.get_file_analysis(flaw.file_name).security_flaws[flaw.severity].append(flaw)
     add_security_flaw.__annotations__ = {'flaw': SecurityFlaw}       
 
 
     def add_violation_issue(self, issue):
-        self.get_file_analysis(issue.file_name).violations[issue.severity.value].append(issue)
+        self.get_file_analysis(issue.file_name).violations[issue.priority.name].append(issue)
     add_violation_issue.__annotations__ = {'issue': ViolationIssue}

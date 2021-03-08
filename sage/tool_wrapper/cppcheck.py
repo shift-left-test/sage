@@ -14,12 +14,12 @@ from ..context import ViolationIssue, Severity
 
 class CppCheckWrapper(ToolWrapper):
     severity_map = {
-        "error": Severity.MAJOR,
-        "warning": Severity.MINOR,
-        "style": Severity.INFO,
-        "performance": Severity.INFO,
-        "portability": Severity.INFO,
-        "information": Severity.INFO
+        "error": Severity.Major,
+        "warning": Severity.Minor,
+        "style": Severity.Info,
+        "performance": Severity.Info,
+        "portability": Severity.Info,
+        "information": Severity.Info
     }
 
     def run(self, ctx):
@@ -42,7 +42,8 @@ class CppCheckWrapper(ToolWrapper):
                     line=location.attrib['line'],
                     column=location.attrib['column'],
                     id=issue.attrib.get('id', None), 
-                    severity=self.severity_map.get(issue.attrib.get('severity', None), Severity.UNKNOWN),
+                    priority=self.severity_map.get(issue.attrib.get('severity', None), Severity.Unknown),
+                    severity=issue.attrib.get('severity', None),
                     msg=issue.attrib.get('msg', None),
                     verbose=issue.attrib.get('verbose', None),
                     cwe=issue.attrib.get('cwe', None)

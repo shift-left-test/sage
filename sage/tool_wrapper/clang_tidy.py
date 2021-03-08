@@ -15,12 +15,12 @@ from ..context import ViolationIssue, Severity
 class ClangTidyWrapper(ToolWrapper):
     re_log = re.compile(r'^(.*):(\d+):(\d+):\s+(.*):(.*)(\s\[(?P<id>.*)\]|)$')
     severity_map = {
-        "ignored" : Severity.INFO,
-        "note" : Severity.INFO,
-        "remark" : Severity.INFO,
-        "warning" : Severity.MINOR,
-        "error" : Severity.MAJOR,
-        "fatal" : Severity.MAJOR
+        "ignored" : Severity.Info,
+        "note" : Severity.Info,
+        "remark" : Severity.Info,
+        "warning" : Severity.Minor,
+        "error" : Severity.Major,
+        "fatal" : Severity.Major
     }
 
     def run(self, ctx):
@@ -53,7 +53,8 @@ class ClangTidyWrapper(ToolWrapper):
                                 line=m.group(2),
                                 column=m.group(3),
                                 id=m.group('id'),
-                                severity=self.severity_map.get(m.group(4), Severity.UNKNOWN),
+                                priority=self.severity_map.get(m.group(4), Severity.Unknown),
+                                severity=m.group(4),
                                 msg=m.group(5)
                             )
                             ctx.add_violation_issue(issue)
