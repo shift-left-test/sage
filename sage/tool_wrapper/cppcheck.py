@@ -38,7 +38,7 @@ class CppCheckWrapper(ToolWrapper):
             for location in issue.iter('location'):
                 ctx.add_violation_issue(ViolationIssue(
                     "cppcheck",
-                    filename=location.attrib['file'],
+                    filename=os.path.relpath(location.attrib['file'], ctx.src_path),
                     line=location.attrib['line'],
                     column=location.attrib['column'],
                     id=issue.attrib.get('id', None), 

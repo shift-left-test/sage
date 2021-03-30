@@ -21,13 +21,18 @@ class Report(object):
 
         self.files_summary = {}
 
+        self.wdata = {}
+        self.wdata["version"] = "0.4.0"
+        self.wdata["complexity"] = list()
+        self.wdata["duplications"] = list()
+        self.wdata["size"] = list()
+        self.wdata["violations"] = list()
+
         for file_name, file_analysis in ctx.file_analysis_map.items():
+            rel_file_name = file_analysis.file_name
             rel_file_name = os.path.relpath(file_name, ctx.src_path)
             files_detail[rel_file_name] = file_analysis
-
             cyclomatic_complexity = file_analysis.get_cyclomatic_complexity()
-            #maxindent_complexity = file_analysis.get_maxindent_complexity()
-            #maintainability_index = file_analysis.get_maintainability_index()
             duplications = file_analysis.get_duplications()
             total_lines = float(file_analysis.total_lines)
 
@@ -36,14 +41,22 @@ class Report(object):
                 file_analysis.code_lines,
                 file_analysis.comment_lines,
                 cyclomatic_complexity,
-                #maxindent_complexity,
-                #maintainability_index,
                 duplications / total_lines * 100 if total_lines > 0 else 0,
                 "{}/{}/{}".format(
                 len(file_analysis.violations[Severity.Major.name]),
                 len(file_analysis.violations[Severity.Minor.name]),
                 len(file_analysis.violations[Severity.Info.name]))
             ]
+
+
+            self.wdata["complexity"].extend(file_analysis.region_cyclomatic_complexity)
+            self.wdata["duplications"].extend(file_analysis.duplications)
+            self.wdata["violations"].extend(file_analysis.violations[Severity.Major.name])
+            self.wdata["violations"].extend(file_analysis.violations[Severity.Minor.name])
+            self.wdata["violations"].extend(file_analysis.violations[Severity.Info.name])
+            self.wdata["violations"].extend(file_analysis.violations[Severity.Unknown.name])
+
+            self.wdata["size"].append(file_analysis.to_report_data())
         
             project_lines += int(file_analysis.total_lines)
             project_loc += int(file_analysis.code_lines)
@@ -52,6 +65,7 @@ class Report(object):
 
             for severity in project_violations.keys():
                 project_violations[severity] += len(file_analysis.violations.get(severity, []))
+
 
         self.data["total_lines"] = project_lines
         self.data["code_lines"] = project_loc
@@ -102,4 +116,4 @@ class Report(object):
                 return obj.__dict__
 
         with open(filepath, "w") as f:
-            json.dump(self.data, f, default=dumper, indent=4)
+            json.dump(self.wdata, f, default=dumper, indent=4)

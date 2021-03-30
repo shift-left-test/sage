@@ -20,13 +20,15 @@ class Severity(Enum):
 
 
 class FileAnalysis(object):
-    def __init__(self):
+    def __init__(self, file_name):
+        self.file_name = file_name
         self.total_lines = 0
         self.code_lines = 0
         self.comment_lines = 0
         self.classes = 0
+        self.functions = 0
 
-        # tuple (type, region, count)
+        # tuple (file name, type, region, start, end, count)
         self.region_cyclomatic_complexity = []
         self.region_maxindent_complexity = []
         self.region_code_lines = []
@@ -59,14 +61,13 @@ class FileAnalysis(object):
 
     def to_report_data(self):
         data = {}
-
+        data["file"] = self.file_name
         data["total_lines"] = self.total_lines
         data["code_lines"] = self.code_lines
         data["comment_lines"] = self.comment_lines
-        data["clones"] = self.duplications
+        data["duplicated_lines"] = self.get_duplications()
         data["classes"] = self.classes
-        data["cyclomatic_complexities"] = self.region_cyclomatic_complexity
-        data["violations"] = self.violations
+        data["functions"] = self.functions
 
         return data
 
@@ -159,7 +160,8 @@ class WrapperContext(object):
 
     def get_file_analysis(self, file_name):
         if file_name not in self.file_analysis_map:
-            self.file_analysis_map[file_name] = FileAnalysis()
+            self.file_analysis_map[file_name] = FileAnalysis(
+                os.path.relpath(file_name, self.src_path))
 
         return self.file_analysis_map.get(file_name, None)
 

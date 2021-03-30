@@ -17,7 +17,7 @@ setuptools.setup(
     ],
     install_requires=[
         "compiledb",
-        "texttable"
+        "texttable",
     ],
     entry_points={
         'console_scripts': [

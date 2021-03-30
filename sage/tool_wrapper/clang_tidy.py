@@ -49,7 +49,7 @@ class ClangTidyWrapper(ToolWrapper):
                         if m:
                             issue = ViolationIssue(
                                 "clang-tidy",
-                                filename=m.group(1),
+                                filename=os.path.relpath(m.group(1), ctx.src_path),
                                 line=m.group(2),
                                 column=m.group(3),
                                 id=m.group('id'),

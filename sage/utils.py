@@ -8,15 +8,21 @@ logger = logging.getLogger('SAGE')
 
 
 class RegionValue(object):
-    def __init__(self, region_type, region_name, value):
+    def __init__(self, file_name, region_type, region_name, start, end, value):
+        self.file_name = file_name
         self.region_type = region_type
         self.region_name = region_name
+        self.start = start
+        self.end = end
         self.value = value
 
     def to_report_data(self):
         region_value = {
+            "file": self.file_name,
             "region_type": self.region_type,
             "region_name": self.region_name,
+            "start": self.start,
+            "end": self.end,
             "value": self.value
         }
 
@@ -32,9 +38,9 @@ class CodeBlock(object):
 
     def to_report_data(self):
         block = {
-            "filename": self.file_name,
-            "start_line": self.start,
-            "end_line": self.end
+            "file": self.file_name,
+            "start": self.start,
+            "end": self.end
         }
 
         return block
@@ -87,16 +93,16 @@ class ViolationIssue(Issue):
 
     def to_report_data(self):
         issue = {
-            "detect_tool": self.tool_name,
-            "id": self.name,
-            "prority": self.priority.name,
+            "file": self.file_name,
+            "tool": self.tool_name,
+            "rule": self.name,
+            "level": self.priority.name,
             "severity": self.severity,
-            "msg": self.msg,
-            "verbose": self.verbose,
-            "cwe": self.cwe,
-            "filename": self.file_name,
+            "message": self.msg,
+            "description": self.verbose,
             "line": self.line,
-            "column": self.column
+            "column": self.column,
+            "cwe": self.cwe,
         }
 
         return issue

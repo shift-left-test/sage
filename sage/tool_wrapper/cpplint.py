@@ -37,7 +37,7 @@ class CppLintWrapper(ToolWrapper):
                 if m:
                     ctx.add_violation_issue(ViolationIssue(
                         toolname="cpplint",
-                        filename=m.group(1),
+                        filename=os.path.relpath(m.group(1), ctx.src_path),
                         line=m.group(2),
                         column=None,
                         id=m.group(4),

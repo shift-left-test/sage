@@ -42,8 +42,9 @@ class DuploWrapper(ToolWrapper):
                 line_start = int(block.attrib["StartLineNumber"])
                 # TODO: duplo's EndLineNumber has bug. so I used line_count
                 line_end = line_start + line_count - 1
+                rel_file_name_ = os.path.relpath(block.attrib["SourceFile"], ctx.src_path)
                 blocks.append(CodeBlock(
-                    block.attrib["SourceFile"], 
+                    rel_file_name_, 
                     line_start, 
                     line_end))
             ctx.add_duplications(line_count, blocks)
