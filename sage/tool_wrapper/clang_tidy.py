@@ -13,7 +13,7 @@ from . import register_wrapper, ToolWrapper
 from ..context import ViolationIssue, Severity
 
 class ClangTidyWrapper(ToolWrapper):
-    re_log = re.compile(r'^(.*):(\d+):(\d+):\s+(.*):(.*)(\s\[(?P<id>.*)\]|)$')
+    re_log = re.compile(r'^(?P<file>.*):(?P<row>\d+):(?P<col>\d+):\s(?P<lv>.*?):\s(?P<msg>.*?)(\s\[(?P<id>.*)\])?$')
     severity_map = {
         "ignored" : Severity.Info,
         "note" : Severity.Info,
@@ -49,13 +49,13 @@ class ClangTidyWrapper(ToolWrapper):
                         if m:
                             issue = ViolationIssue(
                                 "clang-tidy",
-                                filename=os.path.relpath(m.group(1), ctx.src_path),
-                                line=m.group(2),
-                                column=m.group(3),
+                                filename=os.path.relpath(m.group('file'), ctx.src_path),
+                                line=m.group('row'),
+                                column=m.group('col'),
                                 id=m.group('id'),
-                                priority=self.severity_map.get(m.group(4), Severity.Unknown),
-                                severity=m.group(4),
-                                msg=m.group(5)
+                                priority=self.severity_map.get(m.group('lv'), Severity.Unknown),
+                                severity=m.group('lv'),
+                                msg=m.group('msg')
                             )
                             ctx.add_violation_issue(issue)
                         else:
