@@ -18,9 +18,6 @@ setuptools.setup(
     install_requires=[
         "compiledb",
         "texttable",
-        "metrixpp",
-        "cpplint",
-        "flawfinder"
     ],
     entry_points={
         'console_scripts': [
