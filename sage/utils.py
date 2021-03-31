@@ -8,23 +8,33 @@ logger = logging.getLogger('SAGE')
 
 
 class RegionValue(object):
-    def __init__(self, file_name, region_type, region_name, start, end, value):
+    def __init__(self, key, file_name, region_type, region_name, start, end, value):
         self.file_name = file_name
         self.region_type = region_type
         self.region_name = region_name
         self.start = start
         self.end = end
         self.value = value
+        self.key = key
 
     def to_report_data(self):
-        region_value = {
-            "file": self.file_name,
-            "region_type": self.region_type,
-            "region_name": self.region_name,
-            "start": self.start,
-            "end": self.end,
-            "value": self.value
-        }
+        if self.key == "std.code.complexity:cyclomatic":
+            region_value = {
+                "file": self.file_name,
+                "function": self.region_name,
+                "start": self.start,
+                "end": self.end,
+                "value": self.value
+            }
+        else:
+            region_value = {
+                "file": self.file_name,
+                "region_type": self.region_type,
+                "region_name": self.region_name,
+                "start": self.start,
+                "end": self.end,
+                "value": self.value
+            }
 
         return region_value
 

@@ -63,9 +63,9 @@ class MetrixPPWrapper(ToolWrapper):
                 if len(value) == 0 or key in ["file", "region", "type", "modified", "line start", "line end" ]:
                     continue
                 elif key == "std.code.complexity:cyclomatic":
-                    metrics.region_cyclomatic_complexity.append(RegionValue(rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_cyclomatic_complexity.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.complexity:maxindent":
-                    metrics.region_maxindent_complexity.append(RegionValue(rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_maxindent_complexity.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.filelines:code":
                     metrics.code_lines = value
                 elif key == "std.code.filelines:comments":
@@ -73,29 +73,29 @@ class MetrixPPWrapper(ToolWrapper):
                 elif key == "std.code.filelines:total":
                     metrics.total_lines = value
                 elif key == "std.code.lines:code":
-                    metrics.region_code_lines.append(RegionValue(rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_code_lines.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.magic:numbers":
-                    metrics.region_magic_numbers.append(RegionValue(rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_magic_numbers.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.member:classes":
                     metrics.classes += int(value)
-                    metrics.region_classes.append(RegionValue(rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_classes.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.member:fields":
-                    metrics.region_fields.append(RegionValue(rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_fields.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.member:globals":
-                    metrics.region_globals.append(RegionValue(rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_globals.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.member:interfaces":
-                    metrics.region_interfaces.append(RegionValue(rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_interfaces.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.member:methods":
                     metrics.functions += int(value)
-                    metrics.region_methods.append(RegionValue(rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_methods.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.member:namespaces":
-                    metrics.region_namespaces.append(RegionValue(rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_namespaces.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.member:structs":
-                    metrics.region_structs.append(RegionValue(rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_structs.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.member:types":
-                    metrics.region_types.append(RegionValue(rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_types.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.mi:simple":
-                    metrics.region_maintainability_index.append(RegionValue(rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_maintainability_index.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 else:
                     raise Exception("Unknown metrics key: {}".format(key))
 
