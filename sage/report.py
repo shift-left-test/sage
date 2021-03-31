@@ -31,7 +31,6 @@ class Report(object):
         for file_name, file_analysis in ctx.file_analysis_map.items():
             rel_file_name = file_analysis.file_name
             rel_file_name = os.path.relpath(file_name, ctx.src_path)
-            files_detail[rel_file_name] = file_analysis
             cyclomatic_complexity = file_analysis.get_cyclomatic_complexity()
             duplications = file_analysis.get_duplications()
             total_lines = float(file_analysis.total_lines)
@@ -72,7 +71,6 @@ class Report(object):
         self.data["comment_lines"] = project_comments
         self.data["clone_lines"] = project_duplications
         self.data["violations"] = project_violations
-        self.data["files"] = files_detail
 
 
     def get_summary_table(self):
