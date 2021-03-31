@@ -11,13 +11,16 @@ setuptools.setup(
     url="",
     packages=setuptools.find_packages(exclude=['tests']),
     classifiers=[
-        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent"
     ],
     install_requires=[
         "compiledb",
         "texttable",
+        "metrixpp",
+        "cpplint",
+        "flawfinder"
     ],
     entry_points={
         'console_scripts': [
