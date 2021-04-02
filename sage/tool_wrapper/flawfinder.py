@@ -1,7 +1,6 @@
 import os
 import sys
 import csv
-from subprocess import Popen, PIPE
 import json
 
 if __name__ == "__main__":
@@ -11,6 +10,11 @@ if __name__ == "__main__":
 
 from . import register_wrapper, ToolWrapper
 from ..context import SecurityFlaw
+
+if sys.version_info.major == 2:
+    from ..popen_wrapper import Popen, PIPE
+else:
+    from subprocess import Popen, PIPE
 
 class FlawFinderWrapper(ToolWrapper):
     def run(self, ctx):

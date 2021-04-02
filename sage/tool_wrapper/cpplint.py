@@ -1,6 +1,5 @@
 import os
 import sys
-from subprocess import Popen, PIPE
 import json
 import re
 
@@ -11,6 +10,11 @@ if __name__ == "__main__":
 
 from . import register_wrapper, ToolWrapper
 from ..context import ViolationIssue, Severity
+
+if sys.version_info.major == 2:
+    from ..popen_wrapper import Popen, PIPE
+else:
+    from subprocess import Popen, PIPE
 
 class CppLintWrapper(ToolWrapper):
     re_log = re.compile(r'^(.*):(\d+):(.*)\[(.*)\]\s+\[(\d+)\]$')

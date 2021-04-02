@@ -1,7 +1,6 @@
 import os
 import sys
 import csv
-from subprocess import Popen, PIPE
 import json
 
 if __name__ == "__main__":
@@ -11,6 +10,11 @@ if __name__ == "__main__":
 
 from . import register_wrapper, ToolWrapper
 from ..utils import RegionValue
+
+if sys.version_info.major == 2:
+    from ..popen_wrapper import Popen, PIPE
+else:
+    from subprocess import Popen, PIPE
 
 # TODO: use tmp_dir matrixpp.db
 class MetrixPPWrapper(ToolWrapper):

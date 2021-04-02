@@ -1,7 +1,6 @@
 import os
 import sys
 import glob
-from subprocess import Popen, PIPE
 import json
 import xml.etree.ElementTree as ET
 
@@ -13,6 +12,11 @@ if __name__ == "__main__":
 
 from . import register_wrapper, ToolWrapper
 from ..context import WrapperContext, CodeBlock
+
+if sys.version_info.major == 2:
+    from ..popen_wrapper import Popen, PIPE
+else:
+    from subprocess import Popen, PIPE
 
 # TODO: use tmp_dir for duplo.xml
 class DuploWrapper(ToolWrapper):

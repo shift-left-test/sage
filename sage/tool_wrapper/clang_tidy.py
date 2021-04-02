@@ -1,6 +1,5 @@
 import os
 import sys
-from subprocess import Popen, PIPE
 import json
 import re
 
@@ -11,6 +10,11 @@ if __name__ == "__main__":
 
 from . import register_wrapper, ToolWrapper
 from ..context import ViolationIssue, Severity
+
+if sys.version_info.major == 2:
+    from ..popen_wrapper import Popen, PIPE
+else:
+    from subprocess import Popen, PIPE
 
 class ClangTidyWrapper(ToolWrapper):
     re_log = re.compile(r'^(?P<file>.*):(?P<row>\d+):(?P<col>\d+):\s(?P<lv>.*?):\s(?P<msg>.*?)(\s\[(?P<id>.*)\])?$')
