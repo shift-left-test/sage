@@ -22,6 +22,7 @@ def run_tools(ctx, tool_type):
             continue
         logger.info("* {} is running...".format(tool))
         wrapper.run(ctx)
+            
 
 run_tools.__annotations__ = {'ctx': WrapperContext, 'tool_type': ToolType}
 

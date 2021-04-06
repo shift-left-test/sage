@@ -13,10 +13,10 @@ class Report(object):
         project_comments = 0
         project_duplications = 0
         project_violations = {
-            Severity.Major.name: 0,
-            Severity.Minor.name: 0,
-            Severity.Info.name: 0,
-            Severity.Unknown.name: 0, # for detecting parsing error
+            Severity.major.name: 0,
+            Severity.minor.name: 0,
+            Severity.info.name: 0,
+            Severity.unknown.name: 0, # for detecting parsing error
         }
 
         self.files_summary = {}
@@ -30,7 +30,6 @@ class Report(object):
 
         for file_name, file_analysis in ctx.file_analysis_map.items():
             rel_file_name = file_analysis.file_name
-            rel_file_name = os.path.relpath(file_name, ctx.src_path)
             cyclomatic_complexity = file_analysis.get_cyclomatic_complexity()
             duplications = file_analysis.get_duplications()
             total_lines = float(file_analysis.total_lines)
@@ -42,18 +41,18 @@ class Report(object):
                 cyclomatic_complexity,
                 duplications / total_lines * 100 if total_lines > 0 else 0,
                 "{}/{}/{}".format(
-                len(file_analysis.violations[Severity.Major.name]),
-                len(file_analysis.violations[Severity.Minor.name]),
-                len(file_analysis.violations[Severity.Info.name]))
+                len(file_analysis.violations[Severity.major.name]),
+                len(file_analysis.violations[Severity.minor.name]),
+                len(file_analysis.violations[Severity.info.name]))
             ]
 
 
             self.wdata["complexity"].extend(file_analysis.region_cyclomatic_complexity)
             self.wdata["duplications"].extend(file_analysis.duplications)
-            self.wdata["violations"].extend(file_analysis.violations[Severity.Major.name])
-            self.wdata["violations"].extend(file_analysis.violations[Severity.Minor.name])
-            self.wdata["violations"].extend(file_analysis.violations[Severity.Info.name])
-            self.wdata["violations"].extend(file_analysis.violations[Severity.Unknown.name])
+            self.wdata["violations"].extend(file_analysis.violations[Severity.major.name])
+            self.wdata["violations"].extend(file_analysis.violations[Severity.minor.name])
+            self.wdata["violations"].extend(file_analysis.violations[Severity.info.name])
+            self.wdata["violations"].extend(file_analysis.violations[Severity.unknown.name])
 
             self.wdata["size"].append(file_analysis.to_report_data())
         
@@ -83,7 +82,7 @@ class Report(object):
             #"maxindent\ncomplexity",
             #"maintainability\nindex",
             "duplications",
-            "violations\n{}/{}/{}".format(Severity.Major.name, Severity.Minor.name, Severity.Info.name)
+            "violations\n{}/{}/{}".format(Severity.major.name, Severity.minor.name, Severity.info.name)
         ]]
         for file_name, file_summary in self.files_summary.items():
             result_table.append([file_name] + file_summary)
@@ -98,9 +97,9 @@ class Report(object):
             #"",
             self.data["clone_lines"] / self.data["total_lines"] * 100 if self.data["total_lines"] > 0 else 0,
             "{}/{}/{}".format(
-                self.data["violations"][Severity.Major.name],
-                self.data["violations"][Severity.Minor.name],
-                self.data["violations"][Severity.Info.name])
+                self.data["violations"][Severity.major.name],
+                self.data["violations"][Severity.minor.name],
+                self.data["violations"][Severity.info.name])
         ])
 
         return result_table

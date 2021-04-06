@@ -18,16 +18,15 @@ else:
 
 class CppCheckWrapper(ToolWrapper):
     severity_map = {
-        "error": Severity.Major,
-        "warning": Severity.Minor,
-        "style": Severity.Info,
-        "performance": Severity.Info,
-        "portability": Severity.Info,
-        "information": Severity.Info
+        "error": Severity.major,
+        "warning": Severity.minor,
+        "style": Severity.info,
+        "performance": Severity.info,
+        "portability": Severity.info,
+        "information": Severity.info
     }
 
     def run(self, ctx):
-        os.chdir(ctx.work_path)
         args = [
             self.get_tool_path(ctx),
             self.get_tool_option(ctx),
@@ -36,22 +35,24 @@ class CppCheckWrapper(ToolWrapper):
             "--enable=all"
         ]
 
-        proc = Popen(" ".join(args), stdout=PIPE, stderr=PIPE, shell=True)
+        proc = Popen(" ".join(args), stdout=PIPE, stderr=PIPE, shell=True, cwd=ctx.work_path)
         root = ET.fromstring(proc.stderr.read())
         for issue in root.iter('error'):
             for location in issue.iter('location'):
-                ctx.add_violation_issue(ViolationIssue(
-                    "cppcheck",
-                    filename=os.path.relpath(location.attrib['file'], ctx.src_path),
-                    line=location.attrib['line'],
-                    column=location.attrib['column'],
-                    id=issue.attrib.get('id', None), 
-                    priority=self.severity_map.get(issue.attrib.get('severity', None), Severity.Unknown),
-                    severity=issue.attrib.get('severity', None),
-                    msg=issue.attrib.get('msg', None),
-                    verbose=issue.attrib.get('verbose', None),
-                    cwe=issue.attrib.get('cwe', None)
-                ))
+                filerelpath = os.path.relpath(location.attrib['file'], ctx.src_path)
+                if not str(filerelpath ).startswith("../"):
+                    ctx.add_violation_issue(ViolationIssue(
+                        "cppcheck",
+                        filename=filerelpath,
+                        line=int(location.attrib['line']),
+                        column=int(location.attrib['column']),
+                        id=issue.attrib.get('id', None), 
+                        priority=self.severity_map.get(issue.attrib.get('severity', None), Severity.unknown),
+                        severity=issue.attrib.get('severity', None),
+                        msg=issue.attrib.get('msg', None),
+                        verbose=issue.attrib.get('verbose', None),
+                        cwe=issue.attrib.get('cwe', None)
+                    ))
 
 
 register_wrapper("cppcheck", CppCheckWrapper)

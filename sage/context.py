@@ -13,10 +13,10 @@ class ToolType(Enum):
 
 
 class Severity(Enum):
-    Major = 0
-    Minor = 1
-    Info = 2
-    Unknown = 3
+    major = 0
+    minor = 1
+    info = 2
+    unknown = 3
 
 
 class FileAnalysis(object):
@@ -45,10 +45,10 @@ class FileAnalysis(object):
         self.region_maintainability_index = []
 
         self.violations = {
-            Severity.Major.name: [],
-            Severity.Minor.name: [],
-            Severity.Info.name: [],
-            Severity.Unknown.name: []
+            Severity.major.name: [],
+            Severity.minor.name: [],
+            Severity.info.name: [],
+            Severity.unknown.name: []
         }
 
         # 0, 1, 2, 3, 4, 5
@@ -160,8 +160,7 @@ class WrapperContext(object):
 
     def get_file_analysis(self, file_name):
         if file_name not in self.file_analysis_map:
-            self.file_analysis_map[file_name] = FileAnalysis(
-                os.path.relpath(file_name, self.src_path))
+            self.file_analysis_map[file_name] = FileAnalysis(file_name)
 
         return self.file_analysis_map.get(file_name, None)
 

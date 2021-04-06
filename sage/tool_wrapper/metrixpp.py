@@ -58,15 +58,17 @@ class MetrixPPWrapper(ToolWrapper):
             rel_file_name_ = os.path.relpath(file_name_, ctx.src_path)
             region_ = row["region"]
             type_ = row["type"]
-            start_ = row["line start"]
-            end_ = row["line end"]
+            start_ = int(row["line start"])
+            end_ = int(row["line end"])
 
-            metrics = ctx.get_file_analysis(file_name_)
+            metrics = ctx.get_file_analysis(rel_file_name_)
 
             for key, value in row.items():
                 if len(value) == 0 or key in ["file", "region", "type", "modified", "line start", "line end" ]:
                     continue
-                elif key == "std.code.complexity:cyclomatic":
+
+                value = int(value)
+                if key == "std.code.complexity:cyclomatic":
                     metrics.region_cyclomatic_complexity.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.complexity:maxindent":
                     metrics.region_maxindent_complexity.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))

@@ -19,15 +19,14 @@ else:
 class CppLintWrapper(ToolWrapper):
     re_log = re.compile(r'^(.*):(\d+):(.*)\[(.*)\]\s+\[(\d+)\]$')
     severity_map = {
-        "1" : Severity.Major,
-        "2" : Severity.Minor,
-        "3" : Severity.Info,
-        "4" : Severity.Info,
-        "5" : Severity.Info
+        "1" : Severity.major,
+        "2" : Severity.minor,
+        "3" : Severity.info,
+        "4" : Severity.info,
+        "5" : Severity.info
     }
 
     def run(self, ctx):
-        os.chdir(ctx.src_path)
         for filename in ctx.get_src_list():
             args = [
                 self.get_tool_path(ctx),
@@ -35,20 +34,22 @@ class CppLintWrapper(ToolWrapper):
                 filename
             ]
 
-            proc = Popen(" ".join(args), shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+            proc = Popen(" ".join(args), shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True, cwd=ctx.src_path)
             for line in proc.stderr.readlines():
                 m = self.re_log.match(line)
                 if m:
-                    ctx.add_violation_issue(ViolationIssue(
-                        toolname="cpplint",
-                        filename=os.path.relpath(m.group(1), ctx.src_path),
-                        line=m.group(2),
-                        column=None,
-                        id=m.group(4),
-                        priority=self.severity_map.get(m.group(5), Severity.Unknown),
-                        severity=m.group(5),
-                        msg=m.group(3)
-                    ))
+                    filerelpath = os.path.relpath(m.group(1), ctx.src_path)
+                    if not str(filerelpath ).startswith("../"):
+                        ctx.add_violation_issue(ViolationIssue(
+                            toolname="cpplint",
+                            filename=filerelpath,
+                            line=int(m.group(2)),
+                            column=0,
+                            id=m.group(4),
+                            priority=self.severity_map.get(m.group(5), Severity.unknown),
+                            severity=m.group(5),
+                            msg=m.group(3)
+                        ))
                 else:
                     raise Exception("not match")
 

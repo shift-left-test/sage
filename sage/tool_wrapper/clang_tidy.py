@@ -19,12 +19,12 @@ else:
 class ClangTidyWrapper(ToolWrapper):
     re_log = re.compile(r'^(?P<file>.*):(?P<row>\d+):(?P<col>\d+):\s(?P<lv>.*?):\s(?P<msg>.*?)(\s\[(?P<id>.*)\])?$')
     severity_map = {
-        "ignored" : Severity.Info,
-        "note" : Severity.Info,
-        "remark" : Severity.Info,
-        "warning" : Severity.Minor,
-        "error" : Severity.Major,
-        "fatal" : Severity.Major
+        "ignored" : Severity.info,
+        "note" : Severity.info,
+        "remark" : Severity.info,
+        "warning" : Severity.minor,
+        "error" : Severity.major,
+        "fatal" : Severity.major
     }
 
     def run(self, ctx):
@@ -33,7 +33,6 @@ class ClangTidyWrapper(ToolWrapper):
 
             for compile_command in compile_commands:
 
-                os.chdir(compile_command["directory"])
                 src_file = os.path.join(compile_command["directory"], compile_command["file"])
                 args = [
                     self.get_tool_path(ctx),
@@ -46,22 +45,24 @@ class ClangTidyWrapper(ToolWrapper):
                 if ctx.target:
                     args.append(" -target {}".format(ctx.target))
 
-                with Popen(" ".join(args), shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True) as proc:
+                with Popen(" ".join(args), shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True, cwd=compile_command["directory"]) as proc:
                     issue = None
                     for line in proc.stdout.readlines():
                         m = self.re_log.match(line)
                         if m:
+                            filerelpath = os.path.relpath(m.group('file'), ctx.src_path)
                             issue = ViolationIssue(
                                 "clang-tidy",
-                                filename=os.path.relpath(m.group('file'), ctx.src_path),
-                                line=m.group('row'),
-                                column=m.group('col'),
+                                filename=filerelpath,
+                                line=int(m.group('row')),
+                                column=int(m.group('col')),
                                 id=m.group('id'),
-                                priority=self.severity_map.get(m.group('lv'), Severity.Unknown),
+                                priority=self.severity_map.get(m.group('lv'), Severity.unknown),
                                 severity=m.group('lv'),
                                 msg=m.group('msg')
                             )
-                            ctx.add_violation_issue(issue)
+                            if not str(filerelpath ).startswith("../"):
+                                ctx.add_violation_issue(issue)
                         else:
                             if issue:
                                 issue.append_verbose(line)
