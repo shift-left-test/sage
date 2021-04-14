@@ -36,23 +36,25 @@ class CppCheckWrapper(ToolWrapper):
         ]
 
         proc = Popen(" ".join(args), stdout=PIPE, stderr=PIPE, shell=True, cwd=ctx.work_path)
-        root = ET.fromstring(proc.stderr.read())
-        for issue in root.iter('error'):
-            for location in issue.iter('location'):
-                filerelpath = os.path.relpath(location.attrib['file'], ctx.src_path)
-                if not str(filerelpath ).startswith("../"):
-                    ctx.add_violation_issue(ViolationIssue(
-                        "cppcheck",
-                        filename=filerelpath,
-                        line=int(location.attrib['line']),
-                        column=int(location.attrib['column']),
-                        id=issue.attrib.get('id', None), 
-                        priority=self.severity_map.get(issue.attrib.get('severity', None), Severity.unknown),
-                        severity=issue.attrib.get('severity', None),
-                        msg=issue.attrib.get('msg', None),
-                        verbose=issue.attrib.get('verbose', None),
-                        cwe=issue.attrib.get('cwe', None)
-                    ))
+        se = proc.stderr.read()
+        if len(se) > 0:
+            root = ET.fromstring(se)
+            for issue in root.iter('error'):
+                for location in issue.iter('location'):
+                    filerelpath = os.path.relpath(location.attrib['file'], ctx.src_path)
+                    if not str(filerelpath ).startswith("../"):
+                        ctx.add_violation_issue(ViolationIssue(
+                            "cppcheck",
+                            filename=filerelpath,
+                            line=int(location.attrib['line']),
+                            column=int(location.attrib['column']),
+                            id=issue.attrib.get('id', None), 
+                            priority=self.severity_map.get(issue.attrib.get('severity', None), Severity.unknown),
+                            severity=issue.attrib.get('severity', None),
+                            msg=issue.attrib.get('msg', None),
+                            verbose=issue.attrib.get('verbose', None),
+                            cwe=issue.attrib.get('cwe', None)
+                        ))
 
 
 register_wrapper("cppcheck", CppCheckWrapper)
