@@ -14,9 +14,9 @@ from . import register_wrapper, ToolWrapper
 from ..context import WrapperContext, CodeBlock
 
 if sys.version_info.major == 2:
-    from ..popen_wrapper import Popen, PIPE
+    from ..popen_wrapper import Popen, PIPE, DEVNULL
 else:
-    from subprocess import Popen, PIPE
+    from subprocess import Popen, PIPE, DEVNULL
 
 # TODO: use tmp_dir for duplo.xml
 class DuploWrapper(ToolWrapper):
@@ -29,7 +29,7 @@ class DuploWrapper(ToolWrapper):
             result_path
         ]
 
-        proc=Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+        proc=Popen(args, stdin=PIPE, stdout=DEVNULL, stderr=DEVNULL, universal_newlines=True)
         cppfiles = \
             glob.glob(os.path.join(ctx.src_path, "**/*.c")) + \
             glob.glob(os.path.join(ctx.src_path, "**/*.cpp"))

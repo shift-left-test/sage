@@ -12,9 +12,9 @@ from . import register_wrapper, ToolWrapper
 from ..context import ViolationIssue, Severity
 
 if sys.version_info.major == 2:
-    from ..popen_wrapper import Popen, PIPE
+    from ..popen_wrapper import Popen, PIPE, DEVNULL
 else:
-    from subprocess import Popen, PIPE
+    from subprocess import Popen, PIPE, DEVNULL
 
 class CppCheckWrapper(ToolWrapper):
     severity_map = {
@@ -35,7 +35,7 @@ class CppCheckWrapper(ToolWrapper):
             "--enable=all"
         ]
 
-        proc = Popen(" ".join(args), stdout=PIPE, stderr=PIPE, shell=True, cwd=ctx.work_path)
+        proc = Popen(" ".join(args), stdout=DEVNULL, stderr=PIPE, shell=True, cwd=ctx.work_path)
         se = proc.stderr.read()
         if len(se) > 0:
             root = ET.fromstring(se)

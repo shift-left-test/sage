@@ -12,9 +12,9 @@ from . import register_wrapper, ToolWrapper
 from ..context import SecurityFlaw
 
 if sys.version_info.major == 2:
-    from ..popen_wrapper import Popen, PIPE
+    from ..popen_wrapper import Popen, PIPE, DEVNULL
 else:
-    from subprocess import Popen, PIPE
+    from subprocess import Popen, PIPE, DEVNULL
 
 class FlawFinderWrapper(ToolWrapper):
     def run(self, ctx):
@@ -24,7 +24,7 @@ class FlawFinderWrapper(ToolWrapper):
             ctx.src_path
         ]
 
-        proc = Popen(args, stdout=PIPE, stderr=PIPE, universal_newlines=True, cwd=ctx.src_path)
+        proc = Popen(args, stdout=PIPE, stderr=DEVNULL, universal_newlines=True, cwd=ctx.src_path)
         results = csv.DictReader(proc.stdout)
         for row in results:
             filerelpath = os.path.relpath(row.get("File"), ctx.src_path)

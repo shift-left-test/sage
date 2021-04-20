@@ -12,9 +12,9 @@ from . import register_wrapper, ToolWrapper
 from ..utils import RegionValue
 
 if sys.version_info.major == 2:
-    from ..popen_wrapper import Popen, PIPE
+    from ..popen_wrapper import Popen, PIPE, DEVNULL
 else:
-    from subprocess import Popen, PIPE
+    from subprocess import Popen, PIPE, DEVNULL
 
 # TODO: use tmp_dir matrixpp.db
 class MetrixPPWrapper(ToolWrapper):
@@ -41,8 +41,8 @@ class MetrixPPWrapper(ToolWrapper):
             "--",
             os.path.abspath(ctx.src_path)
         ]
-        proc = Popen(args, stdout=PIPE, stderr=PIPE)
-        out, err = proc.communicate()
+        proc = Popen(args, stdout=DEVNULL, stderr=DEVNULL)
+        proc.communicate()
 
         args = [
             "metrix++",
@@ -51,7 +51,7 @@ class MetrixPPWrapper(ToolWrapper):
             os.path.abspath(ctx.src_path)
         ]
 
-        proc = Popen(args, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+        proc = Popen(args, stdout=PIPE, stderr=DEVNULL, universal_newlines=True)
         results = csv.DictReader(proc.stdout)
         for row in results:
             file_name_ = row["file"]

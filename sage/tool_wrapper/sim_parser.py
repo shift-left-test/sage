@@ -8,9 +8,9 @@ if __name__ == "__main__":
     __package__ = 'sage.tool_wrapper'
 
 if sys.version_info.major == 2:
-    from ..popen_wrapper import Popen, PIPE
+    from ..popen_wrapper import Popen, PIPE, DEVNULL
 else:
-    from subprocess import Popen, PIPE
+    from subprocess import Popen, PIPE, DEVNULL
 
 def main():
     

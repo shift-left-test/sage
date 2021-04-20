@@ -12,12 +12,13 @@ from . import register_wrapper, ToolWrapper
 from ..context import ViolationIssue, Severity
 
 if sys.version_info.major == 2:
-    from ..popen_wrapper import Popen, PIPE
+    from ..popen_wrapper import Popen, PIPE, DEVNULL
 else:
-    from subprocess import Popen, PIPE
+    from subprocess import Popen, PIPE, DEVNULL
 
 class ClangTidyWrapper(ToolWrapper):
     re_log = re.compile(r'^(?P<file>.*):(?P<row>\d+):(?P<col>\d+):\s(?P<lv>.*?):\s(?P<msg>.*?)(\s\[(?P<id>.*)\])?$')
+    re_ignored_log = re.compile(r'^(?P<lv>.*?):\s(?P<msg>.*?)(\s\[(?P<id>.*)\])?$')
     severity_map = {
         "ignored" : Severity.info,
         "note" : Severity.info,
@@ -45,7 +46,7 @@ class ClangTidyWrapper(ToolWrapper):
                 if ctx.target:
                     args.append(" -target {}".format(ctx.target))
 
-                with Popen(" ".join(args), shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True, cwd=compile_command["directory"]) as proc:
+                with Popen(" ".join(args), shell=True, stdout=PIPE, stderr=DEVNULL, universal_newlines=True, cwd=compile_command["directory"]) as proc:
                     issue = None
                     for line in proc.stdout.readlines():
                         m = self.re_log.match(line)
@@ -64,10 +65,12 @@ class ClangTidyWrapper(ToolWrapper):
                             if not str(filerelpath ).startswith("../"):
                                 ctx.add_violation_issue(issue)
                         else:
-                            if issue:
-                                issue.append_verbose(line)
-                            else:
-                                raise Exception("parsing error")
+                            m2 = self.re_ignored_log.match(line)
+                            if not m2:
+                                if issue:
+                                    issue.append_verbose(line)
+                                else:
+                                    raise Exception("parsing error")
                             
 
 
