@@ -37,10 +37,18 @@ class MetrixPPWrapper(ToolWrapper):
             "--std.code.complexity.cyclomatic",
             "--std.code.complexity.maxindent",
             "--std.code.magic.numbers",
-            "--std.code.maintindex.simple",
-            "--",
-            os.path.abspath(ctx.src_path)
+            "--std.code.maintindex.simple"
         ]
+
+        for root, dirs, files in os.walk(os.path.abspath(ctx.src_path)):
+            for name in dirs:
+                p = os.path.join(root, name)
+                if os.path.islink(p):
+                    args.append('--exclude-files=%s' % os.path.basename(p))
+
+        args.append("--")
+        args.append(os.path.abspath(ctx.src_path))
+
         proc = Popen(args, stdout=DEVNULL, stderr=DEVNULL)
         proc.communicate()
 
