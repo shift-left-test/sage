@@ -30,11 +30,16 @@ class DuploWrapper(ToolWrapper):
         ]
 
         proc=Popen(args, stdin=PIPE, stdout=DEVNULL, stderr=DEVNULL, universal_newlines=True)
-        cppfiles = \
+        all_cppfiles = \
             glob.glob(os.path.join(ctx.src_path, "**/*.c")) + \
             glob.glob(os.path.join(ctx.src_path, "**/*.cpp"))
 
-        proc.stdin.write("\n".join(cppfiles))
+        target_cppfiles = []
+        for t in target_cppfiles:
+            if t not in ctx.exc_path_list:
+                target_cppfiles.append(t)
+
+        proc.stdin.write("\n".join(target_cppfiles))
         proc.communicate()
 
         tree = ET.parse(result_path)

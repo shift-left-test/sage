@@ -35,6 +35,8 @@ class CppCheckWrapper(ToolWrapper):
             "--enable=all"
         ]
 
+        args += ["-i" + p for p in ctx.exc_path_list]
+
         proc = Popen(" ".join(args), stdout=DEVNULL, stderr=PIPE, shell=True, cwd=ctx.work_path)
         se = proc.stderr.read()
         if len(se) > 0:

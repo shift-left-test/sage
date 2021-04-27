@@ -28,6 +28,9 @@ class CppLintWrapper(ToolWrapper):
 
     def run(self, ctx):
         for filename in ctx.get_src_list():
+            if filename in ctx.exc_path_list:
+                continue
+
             args = [
                 self.get_tool_path(ctx),
                 self.get_tool_option(ctx),

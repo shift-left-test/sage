@@ -1,5 +1,6 @@
 import os
 import re
+import shlex
 from enum import Enum
 import json
 
@@ -133,13 +134,25 @@ class WrapperContext(object):
     src_list = None
     re_tool_option = re.compile(r"(.+):(.+)")
 
-    def __init__(self, source_path, build_path=None, tool_path = None, output_path=None, target_triple=None, check_tool_list=[]):
+    def __init__(self, source_path, build_path=None, tool_path = None, output_path=None, target_triple=None, exclude_path=None, check_tool_list=[]):
         self.src_path = os.path.abspath(source_path) if source_path else os.getcwd()
         self.bld_path = os.path.abspath(build_path) if build_path else None
         self.tool_path = os.path.abspath(tool_path) if tool_path else None
         self.output_path = os.path.abspath(output_path) if output_path else None
         self.proj_file = "compile_commands.json"
         self.target = target_triple
+        
+        self.exc_path_list = []
+        if exclude_path:
+            for exc in shlex.split(exclude_path):
+                exc_path = os.path.join(self.src_path, exc)
+                if os.path.exists(exc_path):
+                    if os.path.isdir(exc_path):
+                        for root, dirs, files in os.walk(exc_path):
+                            for filename in files:
+                                self.exc_path_list.append(os.path.join(root, filename))
+                    else:
+                        self.exc_path_list.append(exc_path)
 
         self.check_tool_list = [] # tuple (toolname, option)
         for tool_info in check_tool_list:
@@ -175,7 +188,7 @@ class WrapperContext(object):
             with open(proj_file_path) as f:
                 compile_commands = json.load(f)
                 for cmd in compile_commands:
-                    src_path = os.path.join(cmd["directory"], cmd["file"])
+                    src_path = os.path.realpath(os.path.join(cmd["directory"], cmd["file"]))
                     self.src_list.append(src_path)
         else:
             pass

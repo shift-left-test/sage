@@ -40,14 +40,24 @@ class MetrixPPWrapper(ToolWrapper):
             "--std.code.maintindex.simple"
         ]
 
+        target_files = []
         for root, dirs, files in os.walk(os.path.abspath(ctx.src_path)):
             for name in dirs:
                 p = os.path.join(root, name)
                 if os.path.islink(p):
                     args.append('--exclude-files=%s' % os.path.basename(p))
+            for filename in files:
+                filepath = os.path.join(root, filename)
+                if filepath in ctx.exc_path_list:
+                    continue
+                target_files.append(filepath)
 
         args.append("--")
-        args.append(os.path.abspath(ctx.src_path))
+
+        if len(target_files) > 0:
+            args += target_files
+        else:
+            args.append(os.path.abspath(ctx.src_path))
 
         proc = Popen(args, stdout=DEVNULL, stderr=DEVNULL)
         proc.communicate()

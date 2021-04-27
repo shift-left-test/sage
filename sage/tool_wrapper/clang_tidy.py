@@ -34,7 +34,11 @@ class ClangTidyWrapper(ToolWrapper):
 
             for compile_command in compile_commands:
 
-                src_file = os.path.join(compile_command["directory"], compile_command["file"])
+                src_file = os.path.realpath(os.path.join(compile_command["directory"], compile_command["file"]))
+
+                if src_file in ctx.exc_path_list:
+                    continue
+
                 args = [
                     self.get_tool_path(ctx),
                     self.get_tool_option(ctx),

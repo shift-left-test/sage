@@ -49,6 +49,7 @@ def main():
     parser.add_argument("--build-path", help="build path")
     parser.add_argument("--tool-path", help="if this option is specified, only tools in this path is executed")
     parser.add_argument("--output-path", help="output path")
+    parser.add_argument("--exclude-path", help="exclude path")
     parser.add_argument("--target-triple", help="compile target triple")
     parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
     parser.add_argument("tools", nargs="*", help=textwrap.dedent("""\
@@ -59,6 +60,12 @@ def main():
 
     args = parser.parse_args()
 
+    default_exclude_path = " .git"
+    if args.exclude_path:
+        args.exclude_path += default_exclude_path
+    else:
+        args.exclude_path = default_exclude_path
+
     log_level = logging.DEBUG if args.verbose else logging.WARNING
 
     logging.basicConfig(stream=sys.stdout, level=log_level)
@@ -67,8 +74,8 @@ def main():
     logger.info("load wrapper")
     load_tools()
 
-    # context 구성
-    ctx = WrapperContext(args.source_path, args.build_path, args.tool_path, args.output_path, args.target_triple, args.tools)
+    # make WrapperContext
+    ctx = WrapperContext(args.source_path, args.build_path, args.tool_path, args.output_path, args.target_triple, args.exclude_path, args.tools)
 
     # metrics
     logger.info("measure source code")

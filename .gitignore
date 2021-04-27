@@ -10,3 +10,4 @@ __pycache__
 CMakeFiles
 metrixpp.db
 *.swp
+duplo_out.xml

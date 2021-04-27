@@ -16,13 +16,40 @@ if sys.version_info.major == 2:
 else:
     from subprocess import Popen, PIPE, DEVNULL
 
+# extensions used by flawfinder
+flawfinder_extensions = ['.h', '.cxx', '.CC', '.C', '.H', '.sc', '.c', '.ec',
+                         '.pc', '.c++', '.cpp', '.hpp', '.pcc', '.cc', '.pgc',
+                         '.ecp', '.CPP']
+
 class FlawFinderWrapper(ToolWrapper):
     def run(self, ctx):
         args = [
             "flawfinder",
             "--csv",
-            ctx.src_path
+            "--",
         ]
+
+        target_files = []
+        for root, dirs, files in os.walk(os.path.abspath(ctx.src_path)):
+            for filename in files:
+                filepath = os.path.join(root, filename)
+                if filepath in ctx.exc_path_list:
+                    continue
+                is_flawfinder_extensions = False
+                for ext in flawfinder_extensions:
+                    if filepath.endswith(ext):
+                        is_flawfinder_extensions = True
+                        break
+
+                if not is_flawfinder_extensions:
+                    continue
+
+                target_files.append(filepath)
+
+        if len(target_files) > 0:
+            args += target_files
+        else:
+            args.append(os.path.abspath(ctx.src_path))
 
         proc = Popen(args, stdout=PIPE, stderr=DEVNULL, universal_newlines=True, cwd=ctx.src_path)
         results = csv.DictReader(proc.stdout)
