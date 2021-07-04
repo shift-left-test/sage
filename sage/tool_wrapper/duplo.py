@@ -2,6 +2,7 @@ import os
 import sys
 import glob
 import json
+import re
 import xml.etree.ElementTree as ET
 
 
@@ -30,12 +31,15 @@ class DuploWrapper(ToolWrapper):
         ]
 
         proc=Popen(args, stdin=PIPE, stdout=DEVNULL, stderr=DEVNULL, universal_newlines=True)
-        all_cppfiles = \
-            glob.glob(os.path.join(ctx.src_path, "**/*.c")) + \
-            glob.glob(os.path.join(ctx.src_path, "**/*.cpp"))
+        re_ext = re.compile(r'^.+\.(c|cpp|cxx|h|hpp)$')
+        all_cppfiles = []
+        for root, dirs, files in os.walk(ctx.src_path):
+            for filename in files:
+                if re_ext.match(filename.lower()):
+                    all_cppfiles.append(os.path.join(root, filename))
 
         target_cppfiles = []
-        for t in target_cppfiles:
+        for t in all_cppfiles:
             if t not in ctx.exc_path_list:
                 target_cppfiles.append(t)
 
