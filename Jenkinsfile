@@ -5,15 +5,26 @@ pipeline {
     }
   }
   stages {
-    stage("Test") {
+    stage('py2') {
       steps {
-        sh "tox"
+        sh "tox -e py2"
+      }
+      post {
+        success {
+          junit 'result.xml'
+          cobertura coberturaReportFile: 'coverage.xml'
+        }
       }
     }
-    stage("Report") {
+    stage('py3') {
       steps {
-        junit 'result.xml'
-        cobertura coberturaReportFile: 'coverage.xml'
+        sh "tox -e py3"
+      }
+      post {
+        success {
+          junit 'result.xml'
+          cobertura coberturaReportFile: 'coverage.xml'
+        }
       }
     }
   }

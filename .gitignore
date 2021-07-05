@@ -11,6 +11,6 @@ CMakeFiles
 metrixpp.db
 *.swp
 duplo_out.xml
-.coverage
+.coverage*
 coverage.xml
 result.xml
