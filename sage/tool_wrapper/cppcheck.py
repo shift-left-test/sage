@@ -54,8 +54,7 @@ class CppCheckWrapper(ToolWrapper):
                             priority=self.severity_map.get(issue.attrib.get('severity', None), Severity.unknown),
                             severity=issue.attrib.get('severity', None),
                             msg=issue.attrib.get('msg', None),
-                            verbose=issue.attrib.get('verbose', None),
-                            cwe=issue.attrib.get('cwe', None)
+                            verbose=issue.attrib.get('verbose', None)
                         ))
 
 

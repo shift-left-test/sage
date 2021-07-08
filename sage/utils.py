@@ -92,14 +92,13 @@ class SecurityFlaw(Issue):
 
 
 class ViolationIssue(Issue):
-    def __init__(self, toolname, filename, line, column, id=None, priority=None, severity=None, msg=None, verbose=None, cwe=None):
+    def __init__(self, toolname, filename, line, column, id=None, priority=None, severity=None, msg=None, verbose=None):
         super(ViolationIssue, self).__init__(toolname, filename, line, column, id)
 
         self.priority = priority
         self.severity = severity
         self.msg = msg
         self.verbose = verbose
-        self.cwe = cwe
 
     def to_report_data(self):
         issue = {
@@ -112,7 +111,6 @@ class ViolationIssue(Issue):
             "description": self.verbose,
             "line": self.line,
             "column": self.column,
-            "cwe": self.cwe,
         }
 
         return issue
