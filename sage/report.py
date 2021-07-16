@@ -23,8 +23,10 @@ class Report(object):
         self.files_summary = {}
 
         self.wdata = {}
-        self.wdata["version"] = __version__
-        self.wdata["args"] = args_dict
+        self.wdata["general"] = {}
+        self.wdata["general"]["version"] = __version__
+        self.wdata["general"]["args"] = args_dict
+        self.wdata["general"]["tools"] = ctx.used_tools
         self.wdata["complexity"] = list()
         self.wdata["duplications"] = list()
         self.wdata["size"] = list()

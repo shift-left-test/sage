@@ -170,6 +170,8 @@ class WrapperContext(object):
         # data
         self.file_analysis_map = {}
 
+        self.used_tools = {}
+
 
     def get_file_analysis(self, file_name):
         if file_name not in self.file_analysis_map:

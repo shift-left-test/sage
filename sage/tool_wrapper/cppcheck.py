@@ -27,8 +27,10 @@ class CppCheckWrapper(ToolWrapper):
     }
 
     def run(self, ctx):
+        ctx.used_tools[self.executable_name] = self.get_tool_path(ctx)
+
         args = [
-            self.get_tool_path(ctx),
+            ctx.used_tools[self.executable_name],
             self.get_tool_option(ctx),
             "--project={}".format(ctx.proj_file),
             "--xml",

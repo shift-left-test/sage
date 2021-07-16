@@ -22,9 +22,12 @@ else:
 # TODO: use tmp_dir for duplo.xml
 class DuploWrapper(ToolWrapper):
     def run(self, ctx):
+
+        ctx.used_tools[self.executable_name] = self.get_tool_path(ctx)
+
         result_path = "duplo_out.xml"
         args = [
-            "duplo",
+            ctx.used_tools[self.executable_name],
             "-xml",
             "-",
             result_path

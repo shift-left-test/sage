@@ -23,8 +23,9 @@ flawfinder_extensions = ['.h', '.cxx', '.CC', '.C', '.H', '.sc', '.c', '.ec',
 
 class FlawFinderWrapper(ToolWrapper):
     def run(self, ctx):
+        ctx.used_tools[self.executable_name] = self.get_tool_path(ctx)
         args = [
-            "flawfinder",
+            ctx.used_tools[self.executable_name],
             "--csv",
             "--",
         ]

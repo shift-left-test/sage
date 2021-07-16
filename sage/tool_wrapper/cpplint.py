@@ -31,8 +31,10 @@ class CppLintWrapper(ToolWrapper):
             if filename in ctx.exc_path_list:
                 continue
 
+            ctx.used_tools[self.executable_name] = self.get_tool_path(ctx)
+
             args = [
-                self.get_tool_path(ctx),
+                ctx.used_tools[self.executable_name],
                 self.get_tool_option(ctx),
                 filename
             ]

@@ -19,8 +19,11 @@ else:
 # TODO: use tmp_dir matrixpp.db
 class MetrixPPWrapper(ToolWrapper):
     def run(self, ctx):
+
+        ctx.used_tools[self.executable_name] = self.get_tool_path(ctx)
+
         args = [
-            "metrix++",
+            ctx.used_tools[self.executable_name],
             "collect",
             "--std.code.filelines.total",
             "--std.code.filelines.code",

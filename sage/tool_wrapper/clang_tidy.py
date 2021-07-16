@@ -39,8 +39,10 @@ class ClangTidyWrapper(ToolWrapper):
                 if src_file in ctx.exc_path_list:
                     continue
 
+                ctx.used_tools[self.executable_name] = self.get_tool_path(ctx)
+
                 args = [
-                    self.get_tool_path(ctx),
+                    ctx.used_tools[self.executable_name],
                     self.get_tool_option(ctx),
                     src_file,
                     "--",
