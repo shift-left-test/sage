@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import copy
 import logging
 import subprocess
 import os
@@ -27,8 +28,8 @@ def run_tools(ctx, tool_type):
 run_tools.__annotations__ = {'ctx': WrapperContext, 'tool_type': ToolType}
 
 
-def generate_report(ctx):
-    report = Report(ctx)
+def generate_report(ctx, args_dict):
+    report = Report(ctx, args_dict)
 
     table = Texttable(max_width=0)
     table.set_deco(Texttable.HEADER | Texttable.BORDER | Texttable.VLINES)
@@ -40,7 +41,7 @@ def generate_report(ctx):
         report.write_to_file(os.path.join(ctx.output_path, "sage_report.json"))
 
 
-generate_report.__annotations__ = {'ctx': WrapperContext}
+generate_report.__annotations__ = {'ctx': WrapperContext, 'args_dict': dict}
 
 
 def main():
@@ -59,6 +60,7 @@ def main():
         default=["cppcheck", "cpplint"])
 
     args = parser.parse_args()
+    args_dict = copy.deepcopy(vars(args))
 
     default_exclude_path = " .git"
     if args.exclude_path:
@@ -98,7 +100,7 @@ def main():
 
     # generate report
     logger.info("reporting")
-    generate_report(ctx)
+    generate_report(ctx, args_dict)
 
 
 if __name__ == "__main__":

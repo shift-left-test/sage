@@ -1,8 +1,13 @@
+import os
 import setuptools
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "sage")))
+from _version import __version__ 
 
 setuptools.setup(
     name="sage",
-    version="0.4.0",
+    version=__version__,
     license="MIT",
     author="sunggon.kim",
     author_email="sunggon82.kim@lge.com",

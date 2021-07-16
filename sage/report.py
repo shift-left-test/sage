@@ -1,10 +1,11 @@
 import os
 import json
+from ._version import __version__
 from .context import Severity
 
 
 class Report(object):
-    def __init__(self, ctx):
+    def __init__(self, ctx, args_dict):
         self.data = {}
 
         files_detail = {}
@@ -22,7 +23,8 @@ class Report(object):
         self.files_summary = {}
 
         self.wdata = {}
-        self.wdata["version"] = "0.4.0"
+        self.wdata["version"] = __version__
+        self.wdata["args"] = args_dict
         self.wdata["complexity"] = list()
         self.wdata["duplications"] = list()
         self.wdata["size"] = list()
