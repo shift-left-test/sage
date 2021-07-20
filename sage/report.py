@@ -23,10 +23,10 @@ class Report(object):
         self.files_summary = {}
 
         self.wdata = {}
-        self.wdata["general"] = {}
-        self.wdata["general"]["version"] = __version__
-        self.wdata["general"]["args"] = args_dict
-        self.wdata["general"]["tools"] = ctx.used_tools
+        self.wdata["properties"] = {}
+        self.wdata["properties"]["version"] = __version__
+        self.wdata["properties"]["arguments"] = args_dict
+        self.wdata["properties"]["tools"] = ctx.used_tools
         self.wdata["complexity"] = list()
         self.wdata["duplications"] = list()
         self.wdata["size"] = list()
@@ -59,7 +59,7 @@ class Report(object):
             self.wdata["violations"].extend(file_analysis.violations[Severity.unknown.name])
 
             self.wdata["size"].append(file_analysis.to_report_data())
-        
+
             project_lines += int(file_analysis.total_lines)
             project_loc += int(file_analysis.code_lines)
             project_comments += int(file_analysis.comment_lines)
