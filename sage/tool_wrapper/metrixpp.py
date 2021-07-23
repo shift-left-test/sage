@@ -84,6 +84,9 @@ class MetrixPPWrapper(ToolWrapper):
 
             metrics = ctx.get_file_analysis(rel_file_name_)
 
+            if type_ == "file":
+              metrics.total_lines = end_ - 1
+
             for key, value in row.items():
                 if len(value) == 0 or key in ["file", "region", "type", "modified", "line start", "line end" ]:
                     continue
@@ -98,7 +101,7 @@ class MetrixPPWrapper(ToolWrapper):
                 elif key == "std.code.filelines:comments":
                     metrics.comment_lines = value
                 elif key == "std.code.filelines:total":
-                    metrics.total_lines = value
+                    pass
                 elif key == "std.code.lines:code":
                     metrics.region_code_lines.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.magic:numbers":
