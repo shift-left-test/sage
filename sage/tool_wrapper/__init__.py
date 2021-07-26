@@ -17,7 +17,6 @@ def load_tools():
     from . import clang_tidy
     from . import metrixpp
     from . import duplo
-    from . import flawfinder
 
 def get_tool_wrapper(toolname):
     return WRAPPER_MAP[toolname]

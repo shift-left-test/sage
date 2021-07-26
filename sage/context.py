@@ -10,7 +10,6 @@ class ToolType(Enum):
     METRICS = 1
     CLONE_DETECTION = 2
     CHECK = 3
-    SECURITY = 4
 
 
 class Severity(Enum):
@@ -52,8 +51,6 @@ class FileAnalysis(object):
             Severity.unknown.name: []
         }
 
-        # 0, 1, 2, 3, 4, 5
-        self.security_flaws = [[],[],[],[],[],[]]
         self.duplications = []
 
         # temporary storage for calculate duplication rate
@@ -203,8 +200,6 @@ class WrapperContext(object):
             return [('metrix++', None)]
         elif tool_type == ToolType.CLONE_DETECTION:
             return [('duplo', None)]
-        elif tool_type == ToolType.SECURITY:
-            return [('flawfinder', None)]
         elif tool_type == ToolType.CHECK:
             return self.check_tool_list
         else:
@@ -216,11 +211,6 @@ class WrapperContext(object):
         # Each block is overlapped with each other
         for block in blocks:
             self.get_file_analysis(block.file_name).add_duplications(line_count, block, blocks)
-
-
-    def add_security_flaw(self, flaw):
-        self.get_file_analysis(flaw.file_name).security_flaws[flaw.severity].append(flaw)
-    add_security_flaw.__annotations__ = {'flaw': SecurityFlaw}       
 
 
     def add_violation_issue(self, issue):

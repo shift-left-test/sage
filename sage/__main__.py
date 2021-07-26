@@ -94,10 +94,6 @@ def main():
     else:
         logger.error("There is no 'compile_commands.json'")
 
-    # security analysis
-    logger.info("check security")
-    run_tools(ctx, ToolType.SECURITY)
-
     # generate report
     logger.info("reporting")
     generate_report(ctx, args_dict)
