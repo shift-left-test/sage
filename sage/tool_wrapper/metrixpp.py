@@ -129,6 +129,9 @@ class MetrixPPWrapper(ToolWrapper):
                 else:
                     raise Exception("Unknown metrics key: {}".format(key))
 
+        if os.path.exists("metrixpp.db"):
+            os.remove("metrixpp.db")
+
 register_wrapper("metrix++", MetrixPPWrapper)
 
 if __name__ == "__main__":

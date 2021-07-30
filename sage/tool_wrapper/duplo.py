@@ -64,6 +64,10 @@ class DuploWrapper(ToolWrapper):
                     line_start, 
                     line_end))
             ctx.add_duplications(line_count, blocks)
+
+        if os.path.exists(result_path):
+            os.remove(result_path)
+
        
 register_wrapper("duplo", DuploWrapper)
 
