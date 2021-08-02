@@ -105,3 +105,19 @@ def test_only_source(source_only_build):
     (output, error) = proc.communicate()
 
     assert u"There is no 'compile_commands.json'" in str(output)
+
+
+def test_basic_with_hidden_file(basic_build_hidden_file):
+    proc = subprocess.Popen([
+        "sage",
+        "--source-path",
+        basic_build_hidden_file.src_path,
+        "--build-path",
+        basic_build_hidden_file.bld_path,
+        "--verbose"],
+        stdout = subprocess.PIPE,
+        stderr = subprocess.PIPE)
+
+    (output, error) = proc.communicate()
+
+    assert u".b/a.cpp" not in str(output), str(output)

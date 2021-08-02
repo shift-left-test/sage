@@ -77,20 +77,6 @@ class Issue(object):
         self.name = name
 
 
-class SecurityFlaw(Issue):
-    def __init__(self, toolname, filename, line, column, name, severity, category, warning, suggestion, note, cwes, context, fingerprint):
-        super(SecurityFlaw, self).__init__(toolname, filename, line, column, name)
-
-        self.severity = int(severity)
-        self.category = category
-        self.warning = warning
-        self.suggestion = suggestion
-        self.note = note
-        self.cwes = cwes
-        self.context = context
-        self.fingerprint = fingerprint
-
-
 class ViolationIssue(Issue):
     def __init__(self, toolname, filename, line, column, id=None, priority=None, severity=None, msg=None, verbose=None):
         super(ViolationIssue, self).__init__(toolname, filename, line, column, id)

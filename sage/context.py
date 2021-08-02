@@ -151,6 +151,13 @@ class WrapperContext(object):
                     else:
                         self.exc_path_list.append(exc_path)
 
+
+        for root, dirs, files in os.walk(self.src_path):
+            for filename in files:
+                target_file = os.path.join(root, filename)
+                if target_file not in self.exc_path_list and self._is_hidden_in_path(target_file, self.src_path):
+                    self.exc_path_list.append(target_file)
+
         self.check_tool_list = [] # tuple (toolname, option)
         for tool_info in check_tool_list:
             m = self.re_tool_option.match(tool_info)
@@ -216,3 +223,11 @@ class WrapperContext(object):
     def add_violation_issue(self, issue):
         self.get_file_analysis(issue.file_name).violations[issue.priority.name].append(issue)
     add_violation_issue.__annotations__ = {'issue': ViolationIssue}
+
+
+    def _is_hidden_in_path(self, target_path, base_path="/"):
+        names = os.path.relpath(target_path, base_path).split(os.path.sep)
+        for cur in names:
+            if cur != "." and cur != ".." and cur.startswith("."):
+                return True
+        return False

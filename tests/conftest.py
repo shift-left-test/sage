@@ -161,6 +161,18 @@ def basic_build_bad_content(request):
 
 
 @pytest.fixture
+def basic_build_hidden_file(request):
+    ctx = TestContext()
+
+    ctx.add_src_file("main.cpp", MAIN_GOOD_CPP_CONTENT)
+    ctx.add_src_file(".b/a.cpp", MAIN_GOOD_CPP_CONTENT)
+    ctx.add_build_file("compile_commands.json", COMPLIE_COMMANDS_CONTENT.format(ctx.src_path))
+
+    request.addfinalizer(ctx.destroy)
+    return ctx
+
+
+@pytest.fixture
 def source_only_build(request):
     ctx = TestContext()
 
