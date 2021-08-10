@@ -28,7 +28,7 @@ class Report(object):
         self.wdata["properties"]["arguments"] = args_dict
         self.wdata["properties"]["tools"] = ctx.used_tools
         self.wdata["complexity"] = list()
-        self.wdata["duplications"] = list()
+        self.wdata["duplications"] = ctx.duplication_blocks
         self.wdata["size"] = list()
         self.wdata["violations"] = list()
 
@@ -52,7 +52,6 @@ class Report(object):
 
 
             self.wdata["complexity"].extend(file_analysis.region_cyclomatic_complexity)
-            self.wdata["duplications"].extend(file_analysis.duplications)
             self.wdata["violations"].extend(file_analysis.violations[Severity.major.name])
             self.wdata["violations"].extend(file_analysis.violations[Severity.minor.name])
             self.wdata["violations"].extend(file_analysis.violations[Severity.info.name])

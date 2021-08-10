@@ -51,8 +51,6 @@ class FileAnalysis(object):
             Severity.unknown.name: []
         }
 
-        self.duplications = []
-
         # temporary storage for calculate duplication rate
         self.duplication_ranges = []
 
@@ -71,7 +69,6 @@ class FileAnalysis(object):
 
 
     def add_duplications(self, lines, block, blocks):
-        self.duplications.append(blocks)
 
         merged = False
         merged_ranges = []
@@ -173,6 +170,7 @@ class WrapperContext(object):
 
         # data
         self.file_analysis_map = {}
+        self.duplication_blocks = []
 
         self.used_tools = {}
 
@@ -216,6 +214,7 @@ class WrapperContext(object):
 
     def add_duplications(self, line_count, blocks):
         # Each block is overlapped with each other
+        self.duplication_blocks.append(blocks)
         for block in blocks:
             self.get_file_analysis(block.file_name).add_duplications(line_count, block, blocks)
 
