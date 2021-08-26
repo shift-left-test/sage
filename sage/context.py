@@ -68,7 +68,7 @@ class FileAnalysis(object):
         return data
 
 
-    def add_duplications(self, lines, block, blocks):
+    def add_duplications(self, lines, block):
 
         merged = False
         merged_ranges = []
@@ -216,7 +216,8 @@ class WrapperContext(object):
         # Each block is overlapped with each other
         self.duplication_blocks.append(blocks)
         for block in blocks:
-            self.get_file_analysis(block.file_name).add_duplications(line_count, block, blocks)
+            tmp_block = CodeBlock(block.file_name, block.start, block.end)
+            self.get_file_analysis(block.file_name).add_duplications(line_count, tmp_block)
 
 
     def add_violation_issue(self, issue):
