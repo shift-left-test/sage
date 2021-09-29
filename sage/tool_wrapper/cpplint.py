@@ -17,7 +17,7 @@ else:
     from subprocess import Popen, PIPE, DEVNULL
 
 class CppLintWrapper(ToolWrapper):
-    re_log = re.compile(r'^(.*):(\d+):(.*)\[(.*)\]\s+\[(\d+)\]$')
+    re_log = re.compile(r'^(.*):(None|\d+):(.*)\[(.*)\]\s+\[(\d+)\]$')
     severity_map = {
         "1" : Severity.major,
         "2" : Severity.minor,
@@ -48,7 +48,7 @@ class CppLintWrapper(ToolWrapper):
                         ctx.add_violation_issue(ViolationIssue(
                             toolname="cpplint",
                             filename=filerelpath,
-                            line=int(m.group(2)),
+                            line=(1 if m.group(2) == 'None' else int(m.group(2))),
                             column=0,
                             id=m.group(4),
                             priority=self.severity_map.get(m.group(5), Severity.unknown),
