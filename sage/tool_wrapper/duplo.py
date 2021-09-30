@@ -28,6 +28,7 @@ class DuploWrapper(ToolWrapper):
         result_path = "duplo_out.xml"
         args = [
             ctx.used_tools[self.executable_name],
+            "-ip",
             "-xml",
             "-",
             result_path
@@ -60,15 +61,15 @@ class DuploWrapper(ToolWrapper):
                 line_end = line_start + line_count - 1
                 rel_file_name_ = os.path.relpath(block.attrib["SourceFile"], ctx.src_path)
                 blocks.append(CodeBlock(
-                    rel_file_name_, 
-                    line_start, 
+                    rel_file_name_,
+                    line_start,
                     line_end))
             ctx.add_duplications(line_count, blocks)
 
         if os.path.exists(result_path):
             os.remove(result_path)
 
-       
+
 register_wrapper("duplo", DuploWrapper)
 
 if __name__ == "__main__":
