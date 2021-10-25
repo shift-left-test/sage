@@ -29,7 +29,10 @@ class ClangTidyWrapper(ToolWrapper):
     }
 
     def run(self, ctx):
-        with open(os.path.join(ctx.work_path, "compile_commands.json")) as fcmd:
+        if not ctx.proj_file_exists():
+            return
+
+        with open(ctx.proj_file_path) as fcmd:
             compile_commands = json.load(fcmd)
 
             for compile_command in compile_commands:
@@ -41,10 +44,9 @@ class ClangTidyWrapper(ToolWrapper):
 
                 ctx.used_tools[self.executable_name] = self.get_tool_path(ctx)
 
-                args = [
-                    ctx.used_tools[self.executable_name],
-                    self.get_tool_option(ctx),
-                    src_file,
+                args = [ctx.used_tools[self.executable_name]]
+                args += self.get_tool_option(ctx)
+                args += [src_file,
                     "--",
                     compile_command["command"]
                 ]

@@ -27,17 +27,18 @@ class CppLintWrapper(ToolWrapper):
     }
 
     def run(self, ctx):
+        if not ctx.proj_file_exists():
+            return
+
         for filename in ctx.get_src_list():
             if filename in ctx.exc_path_list:
                 continue
 
             ctx.used_tools[self.executable_name] = self.get_tool_path(ctx)
 
-            args = [
-                ctx.used_tools[self.executable_name],
-                self.get_tool_option(ctx),
-                filename
-            ]
+            args = [ctx.used_tools[self.executable_name]]
+            args += self.get_tool_option(ctx)
+            args += [filename]
 
             proc = Popen(" ".join(args), shell=True, stdout=DEVNULL, stderr=PIPE, universal_newlines=True, cwd=ctx.src_path)
             for line in proc.stderr.readlines():

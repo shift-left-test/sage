@@ -26,8 +26,9 @@ class DuploWrapper(ToolWrapper):
         ctx.used_tools[self.executable_name] = self.get_tool_path(ctx)
 
         result_path = "duplo_out.xml"
-        args = [
-            ctx.used_tools[self.executable_name],
+        args = [ctx.used_tools[self.executable_name]]
+        args += self.get_tool_option(ctx)
+        args += [
             "-ip",
             "-xml",
             "-",

@@ -105,20 +105,21 @@ class TestContext():
         self._add_file(self.bld_path, filepath, content)
 
 
-    def run_tools(self, tool_type, target_check_tools = [], ctx = None):
-        from sage.tool_wrapper import load_tools
+    def run_tools(self, target_tools = [], ctx = None):
+        from sage.tool_wrapper import load_tools, get_tool_list
         from sage.__main__ import run_tools
-        from sage.context import WrapperContext, ToolType
+        from sage.context import WrapperContext
 
         if not ctx:
-            ctx = WrapperContext(self.src_path, self.bld_path, check_tool_list=target_check_tools)
+            ctx = WrapperContext(self.src_path, self.bld_path, tool_list=target_tools)
 
-        for tool, options in ctx.get_tools(tool_type):
-            if not find_executable(tool):
-                pytest.skip("Fail to find %s" % tool)
+        for toolname in get_tool_list():
+            option = ctx.get_tool(toolname)
+            if option and not find_executable(toolname):
+                pytest.skip("Fail to find %s" % toolname)
 
         load_tools()
-        run_tools(ctx, tool_type)
+        run_tools(ctx)
 
         return ctx
 

@@ -6,12 +6,6 @@ import json
 
 from .utils import *
 
-class ToolType(Enum):
-    METRICS = 1
-    CLONE_DETECTION = 2
-    CHECK = 3
-
-
 class Severity(Enum):
     major = 0
     minor = 1
@@ -128,7 +122,7 @@ class WrapperContext(object):
     src_list = None
     re_tool_option = re.compile(r"(.+):(.+)")
 
-    def __init__(self, source_path, build_path=None, tool_path = None, output_path=None, target_triple=None, exclude_path=None, check_tool_list=[]):
+    def __init__(self, source_path, build_path=None, tool_path = None, output_path=None, target_triple=None, exclude_path=None, tool_list=[]):
         self.src_path = os.path.abspath(source_path) if source_path else os.getcwd()
         self.bld_path = os.path.abspath(build_path) if build_path else None
         self.tool_path = os.path.abspath(tool_path) if tool_path else None
@@ -155,16 +149,19 @@ class WrapperContext(object):
                 if target_file not in self.exc_path_list and self._is_hidden_in_path(target_file, self.src_path):
                     self.exc_path_list.append(target_file)
 
-        self.check_tool_list = [] # tuple (toolname, option)
-        for tool_info in check_tool_list:
+        self.tool_dict = {} # key: tool name, value: option
+        for tool_info in tool_list:
             m = self.re_tool_option.match(tool_info)
             if m:
                 tool_name = m.group(1)
                 tool_option = m.group(2)
-                self.check_tool_list.append((tool_name, tool_option))
+                
+                self.tool_dict[tool_name] = shlex.split(tool_option)
             else:
-                self.check_tool_list.append((tool_info, None))
+                self.tool_dict[tool_info] = []
         self.work_path = self.bld_path if self.bld_path else self.src_path
+        self.proj_file_path = os.path.join(self.work_path, self.proj_file)
+
         if self.output_path and not os.path.exists(self.output_path):
             os.makedirs(self.output_path)
 
@@ -173,6 +170,10 @@ class WrapperContext(object):
         self.duplication_blocks = []
 
         self.used_tools = {}
+
+
+    def proj_file_exists(self):
+        return os.path.exists(self.proj_file_path)
 
 
     def get_file_analysis(self, file_name):
@@ -187,9 +188,8 @@ class WrapperContext(object):
             return self.src_list
 
         self.src_list = []
-        proj_file_path = os.path.join(self.work_path, self.proj_file)
-        if os.path.exists(proj_file_path):
-            with open(proj_file_path) as f:
+        if self.proj_file_exists():
+            with open(self.proj_file_path) as f:
                 compile_commands = json.load(f)
                 for cmd in compile_commands:
                     src_path = os.path.realpath(os.path.join(cmd["directory"], cmd["file"]))
@@ -200,16 +200,11 @@ class WrapperContext(object):
         return self.src_list
 
 
-    def get_tools(self, tool_type):
-        if tool_type == ToolType.METRICS:
-            return [('metrix++', None)]
-        elif tool_type == ToolType.CLONE_DETECTION:
-            return [('duplo', None)]
-        elif tool_type == ToolType.CHECK:
-            return self.check_tool_list
+    def get_tool(self, tool_name):
+        if tool_name in self.tool_dict:
+            return self.tool_dict[tool_name]
         else:
             return None
-    get_tools.__annotations__ = { 'tool_type': ToolType }
 
 
     def add_duplications(self, line_count, blocks):

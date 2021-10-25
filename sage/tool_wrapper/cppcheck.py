@@ -27,16 +27,17 @@ class CppCheckWrapper(ToolWrapper):
     }
 
     def run(self, ctx):
+        if not ctx.proj_file_exists():
+            return
+
         ctx.used_tools[self.executable_name] = self.get_tool_path(ctx)
 
-        args = [
-            ctx.used_tools[self.executable_name],
-            self.get_tool_option(ctx),
-            "--project={}".format(ctx.proj_file),
+        args = [ctx.used_tools[self.executable_name]]
+        args += self.get_tool_option(ctx)
+        args += ["--project={}".format(ctx.proj_file),
             "--xml",
             "--enable=all"
         ]
-
         args += ["-i" + p for p in ctx.exc_path_list]
 
         proc = Popen(" ".join(args), stdout=DEVNULL, stderr=PIPE, shell=True, cwd=ctx.work_path)
