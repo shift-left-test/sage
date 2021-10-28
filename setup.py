@@ -3,7 +3,7 @@ import setuptools
 import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "sage")))
-from _version import __version__ 
+from _version import __version__
 
 setuptools.setup(
     name="sage",
@@ -11,7 +11,7 @@ setuptools.setup(
     license="MIT",
     author="sunggon.kim",
     author_email="sunggon82.kim@lge.com",
-    description="Defines a common interface for static code analyzers to provide usability and scalability",
+    description="Runs a series of static analysis tools to collect and visualize the various software metrics",
     long_description=open('README.md').read(),
     url="",
     packages=setuptools.find_packages(exclude=['tests']),

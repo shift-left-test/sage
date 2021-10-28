@@ -1,3 +1,30 @@
+#-*- coding: utf-8 -*-
+#!/usr/bin/python3
+
+"""
+MIT License
+
+Copyright (c) 2020 LG Electronics, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+"""
+
 import os
 import re
 import shlex
@@ -88,13 +115,13 @@ class FileAnalysis(object):
 
         self.duplication_ranges = merged_ranges
 
-    
+
     def get_cyclomatic_complexity(self):
         if self.region_cyclomatic_complexity:
             return int(max(self.region_cyclomatic_complexity, key=lambda i : int(i.value)).value)
         else:
             return 0
-    
+
 
     def get_maxindent_complexity(self):
         if self.region_maxindent_complexity:
@@ -114,7 +141,7 @@ class FileAnalysis(object):
         for dup_range in self.duplication_ranges:
             assert (dup_range.start <= dup_range.end), "start: {}, end: {}".format(dup_range.start, dup_range.end)
             result += dup_range.end - dup_range.start + 1
-        
+
         return result
 
 
@@ -129,7 +156,7 @@ class WrapperContext(object):
         self.output_path = os.path.abspath(output_path) if output_path else None
         self.proj_file = "compile_commands.json"
         self.target = target_triple
-        
+
         self.exc_path_list = []
         if exclude_path:
             for exc in shlex.split(exclude_path):
@@ -155,7 +182,7 @@ class WrapperContext(object):
             if m:
                 tool_name = m.group(1)
                 tool_option = m.group(2)
-                
+
                 self.tool_dict[tool_name] = shlex.split(tool_option)
             else:
                 self.tool_dict[tool_info] = []
