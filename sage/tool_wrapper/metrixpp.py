@@ -42,6 +42,7 @@ if sys.version_info.major == 2:
     from ..popen_wrapper import Popen, PIPE, DEVNULL
 else:
     from subprocess import Popen, PIPE, DEVNULL
+from ..popen_wrapper import check_non_zero_return_code
 
 # TODO: use tmp_dir matrixpp.db
 class MetrixPPWrapper(ToolWrapper):
@@ -89,8 +90,8 @@ class MetrixPPWrapper(ToolWrapper):
         else:
             args.append(os.path.abspath(ctx.src_path))
 
-        proc = Popen(args, stdout=DEVNULL, stderr=DEVNULL)
-        proc.communicate()
+        proc = Popen(args, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+        check_non_zero_return_code(proc, args)
 
         args = [
             "metrix++",
@@ -99,8 +100,9 @@ class MetrixPPWrapper(ToolWrapper):
             os.path.abspath(ctx.src_path)
         ]
 
-        proc = Popen(args, stdout=PIPE, stderr=DEVNULL, universal_newlines=True)
-        results = csv.DictReader(proc.stdout)
+        proc = Popen(args, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+        out, err = check_non_zero_return_code(proc, args)
+        results = csv.DictReader(out.splitlines())
         for row in results:
             file_name_ = row["file"]
             rel_file_name_ = os.path.relpath(file_name_, ctx.src_path)

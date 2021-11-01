@@ -30,6 +30,8 @@ import sys
 import glob
 import json
 import re
+import tempfile
+import shutil
 import xml.etree.ElementTree as ET
 
 
@@ -46,56 +48,64 @@ if sys.version_info.major == 2:
 else:
     from subprocess import Popen, PIPE, DEVNULL
 
+from ..popen_wrapper import check_non_zero_return_code
+
 # TODO: use tmp_dir for duplo.xml
 class DuploWrapper(ToolWrapper):
     def run(self, ctx):
 
         ctx.used_tools[self.executable_name] = self.get_tool_path(ctx)
 
-        result_path = "duplo_out.xml"
-        args = [ctx.used_tools[self.executable_name]]
-        args += self.get_tool_option(ctx)
-        args += [
-            "-ip",
-            "-xml",
-            "-",
-            result_path
-        ]
+        tempdir = tempfile.mkdtemp()
+        result_path = os.path.join(tempdir, "duplo_out.xml")
+        input_path = os.path.join(tempdir, "file_list.txt")
 
-        proc=Popen(args, stdin=PIPE, stdout=DEVNULL, stderr=DEVNULL, universal_newlines=True)
-        re_ext = re.compile(r'^.+\.(c|cpp|cxx|h|hpp)$')
-        all_cppfiles = []
-        for root, dirs, files in os.walk(ctx.src_path):
-            for filename in files:
-                if re_ext.match(filename.lower()):
-                    all_cppfiles.append(os.path.join(root, filename))
+        try:
+            args = [ctx.used_tools[self.executable_name]]
+            args += self.get_tool_option(ctx)
+            args += [
+                "-ip",
+                "-xml",
+                input_path,
+                result_path
+            ]
 
-        target_cppfiles = []
-        for t in all_cppfiles:
-            if t not in ctx.exc_path_list:
-                target_cppfiles.append(t)
+            re_ext = re.compile(r'^.+\.(c|cpp|cxx|h|hpp)$')
+            all_cppfiles = []
+            for root, dirs, files in os.walk(ctx.src_path):
+                for filename in files:
+                    if re_ext.match(filename.lower()):
+                        all_cppfiles.append(os.path.join(root, filename))
 
-        proc.stdin.write("\n".join(target_cppfiles))
-        proc.communicate()
+            target_cppfiles = []
+            for t in all_cppfiles:
+                if t not in ctx.exc_path_list:
+                    target_cppfiles.append(t)
+            print(input_path)
+            with open(input_path, "w") as f:
+                f.write("\n".join(target_cppfiles))
 
-        tree = ET.parse(result_path)
-        root = tree.getroot()
-        for child in root:
-            line_count = int(child.attrib.get("LineCount"))
-            blocks = []
-            for block in child.findall("block"):
-                line_start = int(block.attrib["StartLineNumber"])
-                # TODO: duplo's EndLineNumber has bug. so I used line_count
-                line_end = line_start + line_count - 1
-                rel_file_name_ = os.path.relpath(block.attrib["SourceFile"], ctx.src_path)
-                blocks.append(CodeBlock(
-                    rel_file_name_,
-                    line_start,
-                    line_end))
-            ctx.add_duplications(line_count, blocks)
+            proc=Popen(args, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+            check_non_zero_return_code(proc, args)
 
-        if os.path.exists(result_path):
-            os.remove(result_path)
+            tree = ET.parse(result_path)
+            root = tree.getroot()
+            for child in root:
+                line_count = int(child.attrib.get("LineCount"))
+                blocks = []
+                for block in child.findall("block"):
+                    line_start = int(block.attrib["StartLineNumber"])
+                    # TODO: duplo's EndLineNumber has bug. so I used line_count
+                    line_end = line_start + line_count - 1
+                    rel_file_name_ = os.path.relpath(block.attrib["SourceFile"], ctx.src_path)
+                    blocks.append(CodeBlock(
+                        rel_file_name_,
+                        line_start,
+                        line_end))
+                ctx.add_duplications(line_count, blocks)
+
+        finally:
+            shutil.rmtree(tempdir, ignore_errors=True)
 
 
 register_wrapper("duplo", DuploWrapper)

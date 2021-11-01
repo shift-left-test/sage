@@ -27,22 +27,75 @@ THE SOFTWARE.
 
 import os
 import subprocess
+import select
 
 PIPE = subprocess.PIPE
 
 DEVNULL = open(os.devnull, 'wb')
 
 class Popen(subprocess.Popen):
-  def __enter__(self):
-      return self
+    def __enter__(self):
+        return self
 
-  def __exit__(self, exc_type, value, traceback):
-      if self.stdout and self.stdout != DEVNULL:
-          self.stdout.close()
-      if self.stderr and self.stderr != DEVNULL:
-          self.stderr.close()
-      try:
-          if self.stdin:
-              self.stdin.close()
-      finally:
-          self.wait()
+    def __exit__(self, exc_type, value, traceback):
+        if self.stdout and self.stdout != DEVNULL:
+            self.stdout.close()
+        if self.stderr and self.stderr != DEVNULL:
+            self.stderr.close()
+        try:  
+            if self.stdin:
+                self.stdin.close()
+        finally:
+            self.wait()
+
+# TODO: If Popen(..., stdin = PIPE, ...) or Popen(..., universal_newlines=False,...), then malfunction
+def check_non_zero_return_code(proc, args, err_message=None):
+    stdout_eof = False
+    stderr_eof = False
+    stdout_str = ""
+    stderr_str = ""
+    select_target = []
+
+    if proc.stdout:
+        select_target.append(proc.stdout)
+    else:
+        stdout_eof = True
+
+    if proc.stderr:
+        select_target.append(proc.stderr)
+    else:
+        stderr_eof = True
+
+    while not stdout_eof or not stderr_eof:
+        proc.poll()
+        ready = select.select(select_target, [], [], 1.0)
+        if not stdout_eof:
+            if proc.stdout in ready[0]:
+                buf = proc.stdout.readline()
+                if len(buf) != 0:
+                    stdout_str += buf
+                else:
+                    stdout_eof = True
+
+        if not stderr_eof:
+            if proc.stderr in ready[0]:
+                buf = proc.stderr.readline()
+                if len(buf) != 0:
+                    stderr_str += buf
+                else:
+                    stderr_eof = True
+    
+    proc.wait()
+    if proc.returncode != 0:
+        do_exit = True
+        if err_message:
+            if err_message not in stderr_str:
+                do_exit = False
+        if do_exit:
+            print('''Error occurred when executing %s
+    return code:%s
+    stdout: %s
+    stderr: %s''' % (" ".join(args), proc.returncode, stdout_str, stderr_str))
+            exit(1)
+    return stdout_str, stderr_str
+check_non_zero_return_code.__annotations__ = {'proc': subprocess, 'args': list}

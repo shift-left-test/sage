@@ -42,6 +42,7 @@ if sys.version_info.major == 2:
     from ..popen_wrapper import Popen, PIPE, DEVNULL
 else:
     from subprocess import Popen, PIPE, DEVNULL
+from ..popen_wrapper import check_non_zero_return_code
 
 class ClangTidyWrapper(ToolWrapper):
     re_log = re.compile(r'^(?P<file>.*):(?P<row>\d+):(?P<col>\d+):\s(?P<lv>.*?):\s(?P<msg>.*?)(\s\[(?P<id>.*)\])?$')
@@ -81,9 +82,11 @@ class ClangTidyWrapper(ToolWrapper):
                 if ctx.target:
                     args.append(" -target {}".format(ctx.target))
 
-                with Popen(" ".join(args), shell=True, stdout=PIPE, stderr=DEVNULL, universal_newlines=True, cwd=compile_command["directory"]) as proc:
+                with Popen(" ".join(args), shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True, cwd=compile_command["directory"]) as proc:
+                    out, err = check_non_zero_return_code(proc, args)
+                    
                     issue = None
-                    for line in proc.stdout.readlines():
+                    for line in out.splitlines():
                         m = self.re_log.match(line)
                         if m:
                             filerelpath = os.path.relpath(m.group('file'), ctx.src_path)
