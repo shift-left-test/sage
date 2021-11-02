@@ -48,8 +48,8 @@ class Popen(subprocess.Popen):
         finally:
             self.wait()
 
-# TODO: If Popen(..., stdin = PIPE, ...) or Popen(..., universal_newlines=False,...), then malfunction
-def check_non_zero_return_code(proc, args, err_message=None):
+# NOTE: If Popen(..., stdin = PIPE, ...) or Popen(..., universal_newlines=False,...), then malfunction
+def check_non_zero_return_code(proc, args, checked_message=None, check_message_in_stderr=True):
     stdout_eof = False
     stderr_eof = False
     stdout_str = ""
@@ -88,9 +88,13 @@ def check_non_zero_return_code(proc, args, err_message=None):
     proc.wait()
     if proc.returncode != 0:
         do_exit = True
-        if err_message:
-            if err_message not in stderr_str:
-                do_exit = False
+        if checked_message:
+            if check_message_in_stderr:
+                if checked_message in stderr_str:
+                    do_exit = False
+            else:
+                if checked_message not in stderr_str:
+                    do_exit = False
         if do_exit:
             print('''Error occurred when executing %s
     return code:%s

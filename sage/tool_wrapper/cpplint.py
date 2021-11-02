@@ -69,7 +69,7 @@ class CppLintWrapper(ToolWrapper):
             args += [filename]
 
             proc = Popen(" ".join(args), shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True, cwd=ctx.src_path)
-            out, err = check_non_zero_return_code(proc, args, '\nFATAL ERROR: ')
+            out, err = check_non_zero_return_code(proc, args, '\nFATAL ERROR: ', False)
 
             for line in err.splitlines():
                 m = self.re_log.match(line)

@@ -83,7 +83,7 @@ class ClangTidyWrapper(ToolWrapper):
                     args.append(" -target {}".format(ctx.target))
 
                 with Popen(" ".join(args), shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True, cwd=compile_command["directory"]) as proc:
-                    out, err = check_non_zero_return_code(proc, args)
+                    out, err = check_non_zero_return_code(proc, args, "Found compiler error(s).", True)
                     
                     issue = None
                     for line in out.splitlines():
