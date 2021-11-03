@@ -31,7 +31,8 @@ import shlex
 from enum import Enum
 import json
 
-from .utils import *
+from .utils import CodeBlock, ViolationIssue
+
 
 class Severity(Enum):
     major = 0
@@ -75,7 +76,6 @@ class FileAnalysis(object):
         # temporary storage for calculate duplication rate
         self.duplication_ranges = []
 
-
     def to_report_data(self):
         data = {}
         data["file"] = self.file_name
@@ -88,8 +88,7 @@ class FileAnalysis(object):
 
         return data
 
-
-    def add_duplications(self, lines, block):
+    def add_duplications(self, block):
 
         merged = False
         merged_ranges = []
@@ -115,31 +114,29 @@ class FileAnalysis(object):
 
         self.duplication_ranges = merged_ranges
 
-
     def get_cyclomatic_complexity(self):
         if self.region_cyclomatic_complexity:
-            return int(max(self.region_cyclomatic_complexity, key=lambda i : int(i.value)).value)
+            return int(max(self.region_cyclomatic_complexity, key=lambda i: int(i.value)).value)
         else:
             return 0
 
-
     def get_maxindent_complexity(self):
         if self.region_maxindent_complexity:
-            return int(max(self.region_maxindent_complexity, key=lambda i : int(i.value)).value)
+            return int(max(self.region_maxindent_complexity, key=lambda i: int(i.value)).value)
         else:
             return 0
 
     def get_maintainability_index(self):
         if self.region_maintainability_index:
-            return int(max(self.region_maintainability_index, key=lambda i : int(i.value)).value)
+            return int(max(self.region_maintainability_index, key=lambda i: int(i.value)).value)
         else:
             return 0
-
 
     def get_duplications(self):
         result = 0
         for dup_range in self.duplication_ranges:
-            assert (dup_range.start <= dup_range.end), "start: {}, end: {}".format(dup_range.start, dup_range.end)
+            assert (dup_range.start <= dup_range.end), \
+                "start: {}, end: {}".format(dup_range.start, dup_range.end)
             result += dup_range.end - dup_range.start + 1
 
         return result
@@ -149,7 +146,16 @@ class WrapperContext(object):
     src_list = None
     re_tool_option = re.compile(r"(.+):(.+)")
 
-    def __init__(self, source_path, build_path=None, tool_path = None, output_path=None, target_triple=None, exclude_path=None, tool_list=[]):
+    def __init__(
+            self, tool_list, source_path, build_path=None, tool_path=None, output_path=None,
+            target_triple=None, exclude_path=""):
+        def get_file_list(path):
+            ret = []
+            for root, _, files in os.walk(path):
+                for filename in files:
+                    ret.append(os.path.join(root, filename))
+            return ret
+
         self.src_path = os.path.abspath(source_path) if source_path else os.getcwd()
         self.bld_path = os.path.abspath(build_path) if build_path else None
         self.tool_path = os.path.abspath(tool_path) if tool_path else None
@@ -158,30 +164,28 @@ class WrapperContext(object):
         self.target = target_triple
 
         self.exc_path_list = []
-        if exclude_path:
-            for exc in shlex.split(exclude_path):
-                exc_path = os.path.join(self.src_path, exc)
-                if os.path.exists(exc_path):
-                    if os.path.isdir(exc_path):
-                        for root, dirs, files in os.walk(exc_path):
-                            for filename in files:
-                                self.exc_path_list.append(os.path.join(root, filename))
-                    else:
-                        self.exc_path_list.append(exc_path)
 
+        for exc in shlex.split(exclude_path):
+            exc_path = os.path.join(self.src_path, exc)
+            if not os.path.exists(exc_path):
+                continue
+            if os.path.isdir(exc_path):
+                for cur_file in get_file_list(exc_path):
+                    self.exc_path_list.append(cur_file)
+            else:
+                self.exc_path_list.append(exc_path)
 
-        for root, dirs, files in os.walk(self.src_path):
-            for filename in files:
-                target_file = os.path.join(root, filename)
-                if target_file not in self.exc_path_list and self._is_hidden_in_path(target_file, self.src_path):
-                    self.exc_path_list.append(target_file)
+        for target_file in get_file_list(self.src_path):
+            if (target_file not in self.exc_path_list
+                    and self._is_hidden_in_path(target_file, self.src_path)):
+                self.exc_path_list.append(target_file)
 
-        self.tool_dict = {} # key: tool name, value: option
+        self.tool_dict = {}  # key: tool name, value: option
         for tool_info in tool_list:
-            m = self.re_tool_option.match(tool_info)
-            if m:
-                tool_name = m.group(1)
-                tool_option = m.group(2)
+            matched = self.re_tool_option.match(tool_info)
+            if matched:
+                tool_name = matched.group(1)
+                tool_option = matched.group(2)
 
                 self.tool_dict[tool_name] = shlex.split(tool_option)
             else:
@@ -198,10 +202,8 @@ class WrapperContext(object):
 
         self.used_tools = {}
 
-
     def proj_file_exists(self):
         return os.path.exists(self.proj_file_path)
-
 
     def get_file_analysis(self, file_name):
         if file_name not in self.file_analysis_map:
@@ -209,15 +211,14 @@ class WrapperContext(object):
 
         return self.file_analysis_map.get(file_name, None)
 
-
     def get_src_list(self):
         if self.src_list:
             return self.src_list
 
         self.src_list = []
         if self.proj_file_exists():
-            with open(self.proj_file_path) as f:
-                compile_commands = json.load(f)
+            with open(self.proj_file_path) as proj_f:
+                compile_commands = json.load(proj_f)
                 for cmd in compile_commands:
                     src_path = os.path.realpath(os.path.join(cmd["directory"], cmd["file"]))
                     self.src_list.append(src_path)
@@ -226,28 +227,25 @@ class WrapperContext(object):
 
         return self.src_list
 
-
     def get_tool(self, tool_name):
         if tool_name in self.tool_dict:
             return self.tool_dict[tool_name]
         else:
             return None
 
-
-    def add_duplications(self, line_count, blocks):
+    def add_duplications(self, blocks):
         # Each block is overlapped with each other
         self.duplication_blocks.append(blocks)
         for block in blocks:
             tmp_block = CodeBlock(block.file_name, block.start, block.end)
-            self.get_file_analysis(block.file_name).add_duplications(line_count, tmp_block)
-
+            self.get_file_analysis(block.file_name).add_duplications(tmp_block)
 
     def add_violation_issue(self, issue):
         self.get_file_analysis(issue.file_name).violations[issue.priority.name].append(issue)
     add_violation_issue.__annotations__ = {'issue': ViolationIssue}
 
-
-    def _is_hidden_in_path(self, target_path, base_path="/"):
+    @classmethod
+    def _is_hidden_in_path(cls, target_path, base_path="/"):
         names = os.path.relpath(target_path, base_path).split(os.path.sep)
         for cur in names:
             if cur != "." and cur != ".." and cur.startswith("."):

@@ -30,19 +30,15 @@ import sys
 import json
 import xml.etree.ElementTree as ET
 
-if __name__ == "__main__":
-    root_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../..")
-    sys.path.append(root_path)
-    __package__ = 'sage.tool_wrapper'
-
 from . import register_wrapper, ToolWrapper
 from ..context import ViolationIssue, Severity
+from ..popen_wrapper import check_non_zero_return_code
 
 if sys.version_info.major == 2:
     from ..popen_wrapper import Popen, PIPE, DEVNULL
 else:
     from subprocess import Popen, PIPE, DEVNULL
-from ..popen_wrapper import check_non_zero_return_code
+
 
 class CppCheckWrapper(ToolWrapper):
     severity_map = {
@@ -62,10 +58,7 @@ class CppCheckWrapper(ToolWrapper):
 
         args = [ctx.used_tools[self.executable_name]]
         args += self.get_tool_option(ctx)
-        args += ["--project={}".format(ctx.proj_file),
-            "--xml",
-            "--enable=all"
-        ]
+        args += ["--project={}".format(ctx.proj_file), "--xml", "--enable=all"]
         args += ["-i" + p for p in ctx.exc_path_list]
 
         proc = Popen(" ".join(args), stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True, cwd=ctx.work_path)
@@ -75,13 +68,13 @@ class CppCheckWrapper(ToolWrapper):
             for issue in root.iter('error'):
                 for location in issue.iter('location'):
                     filerelpath = os.path.relpath(location.attrib['file'], ctx.src_path)
-                    if not str(filerelpath ).startswith("../"):
+                    if not str(filerelpath).startswith("../"):
                         ctx.add_violation_issue(ViolationIssue(
                             "cppcheck",
                             filename=filerelpath,
                             line=int(location.attrib['line']),
                             column=int(location.attrib['column']),
-                            id=issue.attrib.get('id', None),
+                            iid=issue.attrib.get('id', None),
                             priority=self.severity_map.get(issue.attrib.get('severity', None), Severity.unknown),
                             severity=issue.attrib.get('severity', None),
                             msg=issue.attrib.get('msg', None),
@@ -90,12 +83,3 @@ class CppCheckWrapper(ToolWrapper):
 
 
 register_wrapper("cppcheck", CppCheckWrapper)
-
-if __name__ == "__main__":
-    from ..context import WrapperContext
-
-    ctx = WrapperContext(sys.argv[1] if len(sys.argv) > 1 else ".", sys.argv[2] if len(sys.argv) > 2 else None)
-    cppcheck = CppCheckWrapper("cppcheck", None)
-    cppcheck.run(ctx)
-
-    print(json.dumps(ctx.file_analysis_map, default=lambda x: x.__dict__, indent=4))

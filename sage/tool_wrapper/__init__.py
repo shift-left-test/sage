@@ -33,9 +33,10 @@ import re
 
 from ..context import WrapperContext
 
-logger = logging.getLogger('SAGE')
+LOGGER = logging.getLogger('SAGE')
 
 WRAPPER_MAP = {}
+
 
 def load_tools():
     # TODO: load tools from plugin path
@@ -45,15 +46,19 @@ def load_tools():
     from . import metrixpp
     from . import duplo
 
+
 def get_tool_wrapper(toolname):
     return WRAPPER_MAP[toolname]
+
 
 def register_wrapper(name, clazz):
     global WRAPPER_MAP
     WRAPPER_MAP[name] = clazz
 
+
 def get_tool_list():
     return WRAPPER_MAP.keys()
+
 
 class ToolWrapper():
     def __init__(self, executable_name, cmd_line_option):

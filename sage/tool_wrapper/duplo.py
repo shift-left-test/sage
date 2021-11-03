@@ -34,21 +34,15 @@ import tempfile
 import shutil
 import xml.etree.ElementTree as ET
 
-
-if __name__ == "__main__":
-    root_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../..")
-    sys.path.append(root_path)
-    __package__ = 'sage.tool_wrapper'
-
 from . import register_wrapper, ToolWrapper
-from ..context import WrapperContext, CodeBlock
+from ..context import CodeBlock
+from ..popen_wrapper import check_non_zero_return_code
 
 if sys.version_info.major == 2:
     from ..popen_wrapper import Popen, PIPE, DEVNULL
 else:
     from subprocess import Popen, PIPE, DEVNULL
 
-from ..popen_wrapper import check_non_zero_return_code
 
 # TODO: use tmp_dir for duplo.xml
 class DuploWrapper(ToolWrapper):
@@ -84,7 +78,7 @@ class DuploWrapper(ToolWrapper):
             with open(input_path, "w") as f:
                 f.write("\n".join(target_cppfiles))
 
-            proc=Popen(args, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+            proc = Popen(args, stdout=PIPE, stderr=PIPE, universal_newlines=True)
             check_non_zero_return_code(proc, args)
 
             tree = ET.parse(result_path)
@@ -101,19 +95,10 @@ class DuploWrapper(ToolWrapper):
                         rel_file_name_,
                         line_start,
                         line_end))
-                ctx.add_duplications(line_count, blocks)
+                ctx.add_duplications(blocks)
 
         finally:
             shutil.rmtree(tempdir, ignore_errors=True)
 
 
 register_wrapper("duplo", DuploWrapper)
-
-if __name__ == "__main__":
-    from ..context import WrapperContext
-
-    ctx = WrapperContext(sys.argv[1] if len(sys.argv) > 1 else ".")
-    duplo = DuploWrapper("duplo", None)
-    duplo.run(ctx)
-
-    print(json.dumps(ctx.file_analysis_map, default=lambda x: x.__dict__, indent=4))

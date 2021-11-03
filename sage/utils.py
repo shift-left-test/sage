@@ -26,12 +26,9 @@ THE SOFTWARE.
 """
 
 from __future__ import division
-import os
-import subprocess
-import hashlib
 import logging
 
-logger = logging.getLogger('SAGE')
+LOGGER = logging.getLogger('SAGE')
 
 
 class RegionValue(object):
@@ -82,7 +79,6 @@ class CodeBlock(object):
 
         return block
 
-
     def check_merge(self, block):
         if block.start <= self.start and block.end >= self.start:
             self.start = block.start
@@ -105,8 +101,10 @@ class Issue(object):
 
 
 class ViolationIssue(Issue):
-    def __init__(self, toolname, filename, line, column, id=None, priority=None, severity=None, msg=None, verbose=None):
-        super(ViolationIssue, self).__init__(toolname, filename, line, column, id)
+    def __init__(
+            self, toolname, filename, line, column, iid=None,
+            priority=None, severity=None, msg=None, verbose=None):
+        super(ViolationIssue, self).__init__(toolname, filename, line, column, iid)
 
         self.priority = priority
         self.severity = severity
@@ -128,9 +126,8 @@ class ViolationIssue(Issue):
 
         return issue
 
-
     def append_verbose(self, text):
-        if self.verbose == None:
+        if self.verbose is None:
             self.verbose = text
         else:
             self.verbose += text

@@ -30,19 +30,15 @@ import sys
 import csv
 import json
 
-if __name__ == "__main__":
-    root_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../..")
-    sys.path.append(root_path)
-    __package__ = 'sage.tool_wrapper'
-
 from . import register_wrapper, ToolWrapper
 from ..utils import RegionValue
+from ..popen_wrapper import check_non_zero_return_code
 
 if sys.version_info.major == 2:
     from ..popen_wrapper import Popen, PIPE, DEVNULL
 else:
     from subprocess import Popen, PIPE, DEVNULL
-from ..popen_wrapper import check_non_zero_return_code
+
 
 # TODO: use tmp_dir matrixpp.db
 class MetrixPPWrapper(ToolWrapper):
@@ -114,17 +110,20 @@ class MetrixPPWrapper(ToolWrapper):
             metrics = ctx.get_file_analysis(rel_file_name_)
 
             if type_ == "file":
-              metrics.total_lines = end_ - 1
+                metrics.total_lines = end_ - 1
 
             for key, value in row.items():
-                if len(value) == 0 or key in ["file", "region", "type", "modified", "line start", "line end" ]:
+                if (len(value) == 0 or
+                        key in ["file", "region", "type", "modified", "line start", "line end"]):
                     continue
 
                 value = int(value)
                 if key == "std.code.complexity:cyclomatic":
-                    metrics.region_cyclomatic_complexity.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_cyclomatic_complexity.append(
+                        RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.complexity:maxindent":
-                    metrics.region_maxindent_complexity.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_maxindent_complexity.append(
+                        RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.filelines:code":
                     metrics.code_lines = value
                 elif key == "std.code.filelines:comments":
@@ -132,42 +131,45 @@ class MetrixPPWrapper(ToolWrapper):
                 elif key == "std.code.filelines:total":
                     pass
                 elif key == "std.code.lines:code":
-                    metrics.region_code_lines.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_code_lines.append(
+                        RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.magic:numbers":
-                    metrics.region_magic_numbers.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_magic_numbers.append(
+                        RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.member:classes":
                     metrics.classes += int(value)
-                    metrics.region_classes.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_classes.append(
+                        RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.member:fields":
-                    metrics.region_fields.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_fields.append(
+                        RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.member:globals":
-                    metrics.region_globals.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_globals.append(
+                        RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.member:interfaces":
-                    metrics.region_interfaces.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_interfaces.append(
+                        RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.member:methods":
                     metrics.functions += int(value)
-                    metrics.region_methods.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_methods.append(
+                        RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.member:namespaces":
-                    metrics.region_namespaces.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_namespaces.append(
+                        RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.member:structs":
-                    metrics.region_structs.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_structs.append(
+                        RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.member:types":
-                    metrics.region_types.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_types.append(
+                        RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 elif key == "std.code.mi:simple":
-                    metrics.region_maintainability_index.append(RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
+                    metrics.region_maintainability_index.append(
+                        RegionValue(key, rel_file_name_, type_, region_, start_, end_, value))
                 else:
                     raise Exception("Unknown metrics key: {}".format(key))
 
         if os.path.exists("metrixpp.db"):
             os.remove("metrixpp.db")
 
+
 register_wrapper("metrix++", MetrixPPWrapper)
-
-if __name__ == "__main__":
-    from ..context import WrapperContext
-
-    ctx = WrapperContext(sys.argv[1] if len(sys.argv) > 1 else ".")
-    metrixpp = MetrixPPWrapper("metrix++", None)
-    metrixpp.run(ctx)
-
-    print(json.dumps(ctx.file_analysis_map, default=lambda x: x.__dict__, indent=4))

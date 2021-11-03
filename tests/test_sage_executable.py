@@ -13,8 +13,8 @@ def test_basic(basic_build):
         "--build-path",
         basic_build.bld_path,
         "--verbose"],
-        stdout = subprocess.PIPE,
-        stderr = subprocess.PIPE)
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
 
     (output, error) = proc.communicate()
 
@@ -31,8 +31,8 @@ def test_bad_content_with_tool_option(basic_build_bad_content):
         "--verbose",
         "duplo",
         "metrix++"],
-        stdout = subprocess.PIPE,
-        stderr = subprocess.PIPE)
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
 
     (output1, error1) = proc1.communicate()
 
@@ -45,8 +45,8 @@ def test_bad_content_with_tool_option(basic_build_bad_content):
         "--verbose",
         "duplo:-ml 10",
         "metrix++"],
-        stdout = subprocess.PIPE,
-        stderr = subprocess.PIPE)
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
 
     (output2, error2) = proc2.communicate()
 
@@ -65,8 +65,8 @@ def test_bad_content_with_tool_option(basic_build_bad_content):
         "cppcheck:--suppress=unusedPrivateFunction -x c++",
         "--output-path",
         "{}/report".format(basic_build_bad_content.bld_path)],
-        stdout = subprocess.PIPE,
-        stderr = subprocess.PIPE)
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
 
     (output, error) = proc.communicate()
 
@@ -92,9 +92,9 @@ def test_output(basic_build):
         "{}/report".format(basic_build.bld_path),
         "--verbose"
         ],
-        stdout = subprocess.PIPE,
-        stderr = subprocess.PIPE)
-    
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
+
     (output, error) = proc.communicate()
 
     assert os.path.exists("{}/report/sage_report.json".format(basic_build.bld_path))
@@ -110,8 +110,8 @@ def test_invalid_tool_path(basic_build):
         "--tool-path",
         "/bin",
         "--verbose"],
-        stdout = subprocess.PIPE,
-        stderr = subprocess.PIPE)
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
 
     (output, error) = proc.communicate()
 
@@ -126,8 +126,8 @@ def test_invalid_build_path(basic_build):
         "--build-path",
         os.path.join(basic_build.bld_path, "tmp"),
         "--verbose"],
-        stdout = subprocess.PIPE,
-        stderr = subprocess.PIPE)
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
 
     (output, error) = proc.communicate()
 
@@ -140,8 +140,8 @@ def test_only_source(source_only_build):
         "--source-path",
         source_only_build.src_path,
         "--verbose"],
-        stdout = subprocess.PIPE,
-        stderr = subprocess.PIPE)
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
 
     (output, error) = proc.communicate()
 
@@ -156,8 +156,8 @@ def test_basic_with_hidden_file(basic_build_hidden_file):
         "--build-path",
         basic_build_hidden_file.bld_path,
         "--verbose"],
-        stdout = subprocess.PIPE,
-        stderr = subprocess.PIPE)
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
 
     (output, error) = proc.communicate()
 

@@ -87,7 +87,6 @@ class TestContext():
         os.makedirs(self.src_path)
         os.makedirs(self.bld_path)
 
-
     def _add_file(self, basepath, filepath, content):
         fullfilepath = os.path.join(basepath, filepath)
         if not os.path.exists(os.path.dirname(fullfilepath)):
@@ -95,23 +94,20 @@ class TestContext():
 
         with open(fullfilepath, "w") as f:
             f.write(content)
-                    
 
     def add_src_file(self, filepath, content):
         self._add_file(self.src_path, filepath, content)
 
-
     def add_build_file(self, filepath, content):
         self._add_file(self.bld_path, filepath, content)
 
-
-    def run_tools(self, target_tools = [], ctx = None):
+    def run_tools(self, target_tools=[], ctx=None):
         from sage.tool_wrapper import load_tools, get_tool_list
         from sage.__main__ import run_tools
         from sage.context import WrapperContext
 
         if not ctx:
-            ctx = WrapperContext(self.src_path, self.bld_path, tool_list=target_tools)
+            ctx = WrapperContext(target_tools, self.src_path, self.bld_path)
 
         for toolname in get_tool_list():
             option = ctx.get_tool(toolname)
@@ -122,7 +118,6 @@ class TestContext():
         run_tools(ctx)
 
         return ctx
-
 
     def destroy(self):
         shutil.rmtree(self.tmp_dir)

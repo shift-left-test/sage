@@ -51,9 +51,10 @@ def test_run_cppcheck_with_options(basic_build_bad_content):
 def test_run_cppcheck_with_wrong_option(basic_build_bad_content):
     with pytest.raises(SystemExit) as e:
         basic_build_bad_content.run_tools(["cppcheck:--wrong-option"])
-        
+
     assert e.type == SystemExit
     assert e.value.code == 1
+
 
 def test_run_cpplint(basic_build_bad_content):
     ctx = basic_build_bad_content.run_tools(["cpplint"])
@@ -93,7 +94,7 @@ def test_run_cpplint_with_options(basic_build_bad_content):
 def test_run_cpplint_with_wrong_option(basic_build_bad_content):
     with pytest.raises(SystemExit) as e:
         basic_build_bad_content.run_tools(["cpplint:--wrong-option"])
-        
+
     assert e.type == SystemExit
     assert e.value.code == 1
 
@@ -121,12 +122,14 @@ def test_run_clangtidy_with_option(basic_build_bad_content):
 
 
 def test_run_clangtidy_with_options(basic_build_bad_content):
-    ctx = basic_build_bad_content.run_tools(["clang-tidy:-system-headers -checks=clang-analyzer-*,-clang-analyzer-cplusplus*"])
+    ctx = basic_build_bad_content.run_tools(
+        ["clang-tidy:-system-headers -checks=clang-analyzer-*,-clang-analyzer-cplusplus*"])
     num_a_option = 0
     for file_name, file_analysis in ctx.file_analysis_map.items():
         num_a_option += get_num_of_issues(file_analysis)
 
-    ctx = basic_build_bad_content.run_tools(["clang-tidy:-system-headers -checks=-*,clang-analyzer-*,-clang-analyzer-cplusplus*"])
+    ctx = basic_build_bad_content.run_tools(
+        ["clang-tidy:-system-headers -checks=-*,clang-analyzer-*,-clang-analyzer-cplusplus*"])
     num_b_option = 0
     for file_name, file_analysis in ctx.file_analysis_map.items():
         num_b_option += get_num_of_issues(file_analysis)
@@ -137,7 +140,7 @@ def test_run_clangtidy_with_options(basic_build_bad_content):
 def test_run_clangtidy_with_wrong_option(basic_build_bad_content):
     with pytest.raises(SystemExit) as e:
         basic_build_bad_content.run_tools(["clang-tidy:--wrong-option"])
-        
+
     assert e.type == SystemExit
     assert e.value.code == 1
 
