@@ -36,3 +36,8 @@ def test_run_clone_detection_no_dup(basic_build):
 
     for file_name, file_analysis in ctx.file_analysis_map.items():
         assert file_analysis.get_duplications() == 0
+
+
+def test_run_clone_detection_no_src(empty_build):
+    ctx = empty_build.run_tools(["duplo"])
+    assert len(ctx.file_analysis_map) == 0

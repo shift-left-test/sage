@@ -78,6 +78,11 @@ COMPLIE_COMMANDS_CONTENT = """
 ]
 """
 
+EMPTY_COMPLIE_COMMANDS_CONTENT = """
+[
+]
+"""
+
 
 class TestContext():
     def __init__(self):
@@ -140,6 +145,16 @@ def basic_build(request):
 
     ctx.add_src_file("main.cpp", MAIN_GOOD_CPP_CONTENT)
     ctx.add_build_file("compile_commands.json", COMPLIE_COMMANDS_CONTENT.format(ctx.src_path))
+
+    request.addfinalizer(ctx.destroy)
+    return ctx
+
+
+@pytest.fixture
+def empty_build(request):
+    ctx = TestContext()
+
+    ctx.add_build_file("compile_commands.json", EMPTY_COMPLIE_COMMANDS_CONTENT.format(ctx.src_path))
 
     request.addfinalizer(ctx.destroy)
     return ctx

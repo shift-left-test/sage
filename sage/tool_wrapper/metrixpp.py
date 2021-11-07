@@ -29,6 +29,7 @@ import os
 import sys
 import csv
 import json
+import re
 
 from . import register_wrapper, ToolWrapper
 from ..utils import RegionValue
@@ -67,6 +68,7 @@ class MetrixPPWrapper(ToolWrapper):
             "--std.code.maintindex.simple"
         ]
 
+        re_ext = re.compile(r'^.+\.(c|cc|cpp|cxx|h|hh|hpp|hxx)$')
         target_files = []
         for root, dirs, files in os.walk(os.path.abspath(ctx.src_path)):
             for name in dirs:
@@ -77,14 +79,15 @@ class MetrixPPWrapper(ToolWrapper):
                 filepath = os.path.join(root, filename)
                 if filepath in ctx.exc_path_list:
                     continue
-                target_files.append(filepath)
+                if re_ext.match(filename.lower()):
+                    target_files.append(filepath)
 
         args.append("--")
 
         if len(target_files) > 0:
             args += target_files
         else:
-            args.append(os.path.abspath(ctx.src_path))
+            return
 
         proc = Popen(args, stdout=PIPE, stderr=PIPE, universal_newlines=True)
         check_non_zero_return_code(proc, args)

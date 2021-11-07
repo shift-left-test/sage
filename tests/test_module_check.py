@@ -185,6 +185,21 @@ def test_run_clangtidy_no_issue(basic_build):
         assert num_of_issues == 0
 
 
+def test_run_cppcheck_no_src(empty_build):
+    ctx = empty_build.run_tools(["cppcheck"])
+    assert len(ctx.file_analysis_map) == 0
+
+
+def test_run_cpplint_no_src(empty_build):
+    ctx = empty_build.run_tools(["cpplint"])
+    assert len(ctx.file_analysis_map) == 0
+
+
+def test_run_clangtidy_no_src(empty_build):
+    ctx = empty_build.run_tools(["clang-tidy"])
+    assert len(ctx.file_analysis_map) == 0
+
+
 def test_run_check_default_no_issue(basic_build):
     ctx = basic_build.run_tools(["cppcheck", "cpplint"])
 

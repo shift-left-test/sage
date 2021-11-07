@@ -19,6 +19,26 @@ def test_basic(basic_build):
     (output, error) = proc.communicate()
 
     assert u"cpplint is running..." in str(output), str(output)
+    assert len(error) == 0
+    assert proc.returncode == 0
+
+
+def test_empty(empty_build):
+    proc = subprocess.Popen([
+        "sage",
+        "--source-path",
+        empty_build.src_path,
+        "--build-path",
+        empty_build.bld_path,
+        "--verbose"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
+
+    (output, error) = proc.communicate()
+
+    assert u"cpplint is running..." in str(output), str(output)
+    assert len(error) == 0
+    assert proc.returncode == 0
 
 
 def test_bad_content_with_tool_option(basic_build_bad_content):

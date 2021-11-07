@@ -51,7 +51,7 @@ class CppCheckWrapper(ToolWrapper):
     }
 
     def run(self, ctx):
-        if not ctx.proj_file_exists():
+        if not ctx.proj_file_exists() or len(ctx.get_src_list()) == 0:
             return
 
         ctx.used_tools[self.executable_name] = self.get_tool_path(ctx)

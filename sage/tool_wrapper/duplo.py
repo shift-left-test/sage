@@ -75,6 +75,10 @@ class DuploWrapper(ToolWrapper):
             for t in all_cppfiles:
                 if t not in ctx.exc_path_list:
                     target_cppfiles.append(t)
+
+            if len(target_cppfiles) == 0:
+                return
+
             with open(input_path, "w") as f:
                 f.write("\n".join(target_cppfiles))
 
