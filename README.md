@@ -1,6 +1,11 @@
 # SAGE
 
-Static Analysis Group Executor
+> Static Analysis Group Executor
+
+
+## About
+
+This program runs a series of static analysis tools to collect and visualize the various software metric information.
 
 
 ## Requirements
@@ -59,11 +64,6 @@ tox
 ```bash
 pip3 install .
 ```
-
-
-## About
-
-This project runs a series of static analysis tools to collect and visualize the various software metric information.
 
 
 ## Licenses
