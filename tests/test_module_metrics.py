@@ -7,6 +7,7 @@ import sys
 
 def test_run_metrics(basic_build):
     ctx = basic_build.run_tools(["metrix++"])
+    assert len(ctx.file_analysis_map) != 0
 
     for file_name, file_analysis in ctx.file_analysis_map.items():
         assert file_analysis.total_lines != 0
