@@ -24,11 +24,11 @@ else:
 class CppLintWrapper(ToolWrapper):
     re_log = re.compile(r'^(.*):(None|\d+):(.*)\[(.*)\]\s+\[(\d+)\]$')
     severity_map = {
-        "1": Severity.major,
-        "2": Severity.minor,
+        "1": Severity.info,
+        "2": Severity.info,
         "3": Severity.info,
-        "4": Severity.info,
-        "5": Severity.info
+        "4": Severity.minor,
+        "5": Severity.major
     }
 
     def run(self, ctx):
