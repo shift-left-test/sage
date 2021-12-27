@@ -1,68 +1,71 @@
 # SAGE
 
-> Static Analysis Group Executor
-
+> Note: As a sub-project of the meta-shift project, sage is not intended to be run independently.
 
 ## About
 
-This program runs a series of static analysis tools to collect and visualize the various software metric information.
+Sage runs a set of static analysis tools to collect and visualizae the various software quality metrics, including:
+
+* Lines of code
+* Complexity
+* Duplicates
+* Static analysis issues
+
+Currently, sage uses the following static analysis tools to evaluate the source code quality.
+
+* cppcheck
+* cpplint
+* clang-tidy
 
 
-## Requirements
+## Development
 
-To install required packages
+To prepare your host environment, you can simply download a preconfigured dockerfile to start a docker container.
 
-```bash
-$ apt-get install build-essential cmake wget python3 python3-pip libpcre3-dev unzip
-```
+    $ git clone https://github.com/shift-left-test/dockerfiles.git
+    $ cd dockerfiles
+    $ docker build -f ubuntu-dev/Dockerfile -t ubuntu-dev .
+    $ docker run --rm -it ubuntu-dev
 
-To install clang-tidy
-```bash
-$ apt-get install clang clang-tidy
-```
+To test the source code:
 
-To install Duplo
-```bash
-$ mkdir Duplo && \
-      cd Duplo && \
-      wget https://github.com/dlidstrom/Duplo/releases/download/v0.6.1/duplo-linux.zip && \
-      unzip duplo-linux.zip && \
-      cp duplo /usr/bin/
-```
+    $ tox
 
-To install cppcheck
-```bash
-$ mkdir cppcheck && \
-      cd cppcheck && \
-      wget https://github.com/danmar/cppcheck/archive/2.1.tar.gz && \
-      tar xvf 2.1.tar.gz && \
-      cmake cppcheck-2.1/ -DUSE_MATCHCOMPILER=ON -DHAVE_RULES=ON && \
-      make -j && \
-      make install
-```
+To install the package:
 
-To install cpplint
-```bash
-pip3 install cpplint
-```
-
-To install tox (optional for runnting tests)
-```bash
-pip3 install tox
-```
+    $ pip3 install .
 
 
-## How to run tests
+## Command-line arguments
 
 ```bash
-tox
-```
+usage: sage [-h] [--source-path SOURCE_PATH] [--build-path BUILD_PATH]
+            [--tool-path TOOL_PATH] [--output-path OUTPUT_PATH]
+            [--exclude-path EXCLUDE_PATH] [--target-triple TARGET_TRIPLE] [-v]
+            [tools [tools ...]]
 
+Static Analysis Group Execution
 
-## How to install
+positional arguments:
+  tools                 List of tools.
+                        Tool-specific command-line options separated by colons can be added after the tool name.
+                        ex) 'cppcheck:--library=googletest'
 
-```bash
-pip3 install .
+optional arguments:
+  -h, --help            show this help message and exit
+  --source-path SOURCE_PATH
+                        source path
+  --build-path BUILD_PATH
+                        build path
+  --tool-path TOOL_PATH
+                        if this option is specified, only tools in this path is executed
+  --output-path OUTPUT_PATH
+                        output path
+  --exclude-path EXCLUDE_PATH
+                        exclude path
+  --target-triple TARGET_TRIPLE
+                        compile target triple
+  -v, --verbose         increase output verbosity
 ```
 
 
