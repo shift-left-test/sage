@@ -1,7 +1,7 @@
 pipeline {
   agent {
     docker {
-      image "cart.lge.com/swte/yocto-dev:18.04"
+      image "cart.lge.com/swte/ubuntu-dev:latest"
     }
   }
   stages {
