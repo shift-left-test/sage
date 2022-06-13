@@ -1,0 +1,6 @@
+Open Source Software Package:
+- name: Fixed Table Headers
+  source: https://codepen.io/aardrian/pen/vMpayz
+  license : MIT
+  file : sage/resources/style.css
+  copyright : Copyright (c) 2022 by Adrian Roselli (https://codepen.io/aardrian/pen/vMpayz)

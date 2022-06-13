@@ -15,6 +15,7 @@ setuptools.setup(
     long_description=open('README.md').read(),
     url="",
     packages=setuptools.find_packages(exclude=['tests']),
+    package_data={"sage": ["resources/style.css"]},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

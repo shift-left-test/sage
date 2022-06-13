@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 """
 
 from __future__ import division
+from collections import OrderedDict
 import logging
 
 LOGGER = logging.getLogger('SAGE')
@@ -24,22 +25,22 @@ class RegionValue(object):
 
     def to_report_data(self):
         if self.key == "std.code.complexity:cyclomatic":
-            region_value = {
-                "file": self.file_name,
-                "function": self.region_name,
-                "start": self.start,
-                "end": self.end,
-                "value": self.value
-            }
+            region_value = OrderedDict([
+                ("file", self.file_name),
+                ("function", self.region_name),
+                ("start", self.start),
+                ("end", self.end),
+                ("value", self.value)
+            ])
         else:
-            region_value = {
-                "file": self.file_name,
-                "region_type": self.region_type,
-                "region_name": self.region_name,
-                "start": self.start,
-                "end": self.end,
-                "value": self.value
-            }
+            region_value = OrderedDict([
+                ("file", self.file_name),
+                ("region_type", self.region_type),
+                ("region_name", self.region_name),
+                ("start", self.start),
+                ("end", self.end),
+                ("value", self.value)
+            ])
 
         return region_value
 
@@ -52,11 +53,11 @@ class CodeBlock(object):
         assert (self.start <= self.end), "start: {}, end: {}".format(self.start, self.end)
 
     def to_report_data(self):
-        block = {
-            "file": self.file_name,
-            "start": self.start,
-            "end": self.end
-        }
+        block = OrderedDict([
+            ("file", self.file_name),
+            ("start", self.start),
+            ("end", self.end)
+        ])
 
         return block
 
@@ -93,17 +94,17 @@ class ViolationIssue(Issue):
         self.verbose = verbose
 
     def to_report_data(self):
-        issue = {
-            "file": self.file_name,
-            "tool": self.tool_name,
-            "rule": self.name,
-            "level": self.priority.name,
-            "severity": self.severity,
-            "message": self.msg,
-            "description": self.verbose,
-            "line": self.line,
-            "column": self.column,
-        }
+        issue = OrderedDict([
+            ("file", self.file_name),
+            ("tool", self.tool_name),
+            ("rule", self.name),
+            ("level", self.priority.name),
+            ("severity", self.severity),
+            ("message", self.msg),
+            ("description", self.verbose),
+            ("line", self.line),
+            ("column", self.column),
+        ])
 
         return issue
 

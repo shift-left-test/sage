@@ -47,7 +47,7 @@ def generate_report(ctx, args_dict):
     print(table.draw())
 
     if ctx.output_path:
-        report.write_to_file(os.path.join(ctx.output_path, "sage_report.json"))
+        report.write_to_file(ctx.output_path)
 
 
 generate_report.__annotations__ = {'ctx': WrapperContext, 'args_dict': dict}

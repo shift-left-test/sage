@@ -117,7 +117,8 @@ def test_output(basic_build):
 
     (output, error) = proc.communicate()
 
-    assert os.path.exists("{}/report/sage_report.json".format(basic_build.bld_path))
+    for outputfile in ["sage_report.json", "index.html", "style.css"]:
+        assert os.path.exists("{}/report/{}".format(basic_build.bld_path, outputfile))
 
 
 def test_invalid_tool_path(basic_build):

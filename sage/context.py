@@ -13,6 +13,7 @@ from enum import Enum
 import json
 
 from .utils import CodeBlock, ViolationIssue
+from collections import OrderedDict
 
 
 class Severity(Enum):
@@ -58,7 +59,7 @@ class FileAnalysis(object):
         self.duplication_ranges = []
 
     def to_report_data(self):
-        data = {}
+        data = OrderedDict()
         data["file"] = self.file_name
         data["total_lines"] = self.total_lines
         data["code_lines"] = self.code_lines
