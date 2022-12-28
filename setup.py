@@ -24,6 +24,7 @@ setuptools.setup(
     install_requires=[
         "compiledb",
         "texttable",
+        "defusedxml",
     ],
     entry_points={
         'console_scripts': [

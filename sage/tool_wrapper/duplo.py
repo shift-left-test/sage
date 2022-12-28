@@ -13,7 +13,7 @@ import json
 import re
 import tempfile
 import shutil
-import xml.etree.ElementTree as ET
+from defusedxml.ElementTree import parse
 
 from . import register_wrapper, ToolWrapper
 from ..context import CodeBlock
@@ -66,7 +66,7 @@ class DuploWrapper(ToolWrapper):
             proc = Popen(args, stdout=PIPE, stderr=PIPE, universal_newlines=True)
             check_non_zero_return_code(proc, args)
 
-            tree = ET.parse(result_path)
+            tree = parse(result_path)
             root = tree.getroot()
             for child in root:
                 line_count = int(child.attrib.get("LineCount"))

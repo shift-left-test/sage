@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 import os
 import sys
 import json
-import xml.etree.ElementTree as ET
+from defusedxml.ElementTree import fromstring
 
 from . import register_wrapper, ToolWrapper
 from ..context import ViolationIssue, Severity
@@ -45,7 +45,7 @@ class CppCheckWrapper(ToolWrapper):
         proc = Popen(" ".join(args), stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True, cwd=ctx.work_path)
         out, err = check_non_zero_return_code(proc, args)
         if len(err) > 0:
-            root = ET.fromstring(err)
+            root = fromstring(err)
             for issue in root.iter('error'):
                 for location in issue.iter('location'):
                     filerelpath = os.path.relpath(location.attrib['file'], ctx.src_path)
