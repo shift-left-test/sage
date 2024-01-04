@@ -1,7 +1,7 @@
 pipeline {
   agent {
     docker {
-      image "cart.lge.com/swte/ubuntu-dev:latest"
+      image "cart.lge.com/swte/python-dev:latest"
     }
   }
   stages {
