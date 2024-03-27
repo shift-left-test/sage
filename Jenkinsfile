@@ -5,20 +5,9 @@ pipeline {
     }
   }
   stages {
-    stage('py2') {
+    stage('test') {
       steps {
-        sh "tox -e py2"
-      }
-      post {
-        success {
-          junit 'result.xml'
-          cobertura coberturaReportFile: 'coverage.xml'
-        }
-      }
-    }
-    stage('py3') {
-      steps {
-        sh "tox -e py3"
+        sh "tox"
       }
       post {
         success {
