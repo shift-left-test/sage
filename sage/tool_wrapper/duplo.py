@@ -54,7 +54,7 @@ class DuploWrapper(ToolWrapper):
 
             target_cppfiles = []
             for t in all_cppfiles:
-                if t not in ctx.exc_path_list:
+                if not self._is_file_in_path_list(t, ctx.exc_path_list):
                     target_cppfiles.append(t)
 
             if len(target_cppfiles) == 0:

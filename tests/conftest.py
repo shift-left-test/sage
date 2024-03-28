@@ -176,7 +176,12 @@ def basic_build_hidden_file(request):
     ctx = TestContext()
 
     ctx.add_src_file("main.cpp", MAIN_GOOD_CPP_CONTENT)
-    ctx.add_src_file(".b/a.cpp", MAIN_GOOD_CPP_CONTENT)
+    ctx.add_src_file(".hidden.cpp", MAIN_GOOD_CPP_CONTENT)
+    ctx.add_src_file(".hidden/visible.cpp", MAIN_GOOD_CPP_CONTENT)
+    ctx.add_src_file(".hidden/.hidden.cpp", MAIN_GOOD_CPP_CONTENT)
+    ctx.add_src_file("visible/.hidden/visible.cpp", MAIN_GOOD_CPP_CONTENT)
+    ctx.add_src_file("visible/.hidden/.hidden.cpp", MAIN_GOOD_CPP_CONTENT)
+    ctx.add_src_file("visible/visible/.hidden.cpp", MAIN_GOOD_CPP_CONTENT)
     ctx.add_build_file("compile_commands.json", COMPLIE_COMMANDS_CONTENT.format(ctx.src_path))
 
     request.addfinalizer(ctx.destroy)

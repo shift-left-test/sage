@@ -182,4 +182,10 @@ def test_basic_with_hidden_file(basic_build_hidden_file):
 
     (output, error) = proc.communicate()
 
-    assert u".b/a.cpp" not in str(output), str(output)
+    assert u".hidden/visible.cpp" not in str(output), str(output)
+    assert u".hidden/.hidden.cpp" not in str(output), str(output)
+    assert u"visible/.hidden/visible.cpp" not in str(output), str(output)
+    assert u"visible/.hidden/.hidden.cpp" not in str(output), str(output)
+    assert u"visible/visible/.hidden.cpp" not in str(output), str(output)
+    assert u".hidden.cpp" not in str(output), str(output)
+    assert u"main.cpp" in str(output), str(output)

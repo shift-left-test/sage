@@ -36,7 +36,7 @@ class CppLintWrapper(ToolWrapper):
             return
 
         for filename in ctx.get_src_list():
-            if filename in ctx.exc_path_list:
+            if self._is_file_in_path_list(filename, ctx.exc_path_list):
                 continue
 
             ctx.used_tools[self.executable_name] = self.get_tool_path(ctx)

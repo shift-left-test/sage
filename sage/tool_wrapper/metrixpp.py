@@ -58,7 +58,7 @@ class MetrixPPWrapper(ToolWrapper):
                     args.append('--exclude-files=%s' % os.path.basename(p))
             for filename in files:
                 filepath = os.path.join(root, filename)
-                if filepath in ctx.exc_path_list:
+                if self._is_file_in_path_list(filepath, ctx.exc_path_list):
                     continue
                 if re_ext.match(filename.lower()):
                     target_files.append(filepath)
