@@ -127,6 +127,7 @@ class FileAnalysis(object):
 class WrapperContext(object):
     src_list = None
     re_tool_option = re.compile(r"(.+):(.+)")
+    re_ext = re.compile(r'^.+\.(c|cc|cpp|cxx|h|hh|hpp|hxx)$')
 
     def __init__(
             self, tool_list, source_path, build_path=None, tool_path=None, output_path=None,
@@ -158,7 +159,7 @@ class WrapperContext(object):
 
             for filename in files:
                 filepath = os.path.abspath(os.path.join(root, filename))
-                if is_hidden(filename):
+                if is_hidden(filename) and self.re_ext.match(filename.lower()):
                     self.exc_path_list.append(filepath)
 
         self.tool_dict = {}  # key: tool name, value: option
