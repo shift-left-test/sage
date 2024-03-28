@@ -60,7 +60,7 @@ class ToolWrapper():
 
     @staticmethod
     def _is_file_in_path_list(file_path, file_path_list):
-        file_paddth = os.path.abspath(file_path)
+        file_path = os.path.abspath(file_path)
         for cur_path in file_path_list:
             cur_path = os.path.abspath(cur_path)
             if os.path.isdir(cur_path):
