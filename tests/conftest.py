@@ -189,6 +189,20 @@ def basic_build_hidden_file(request):
 
 
 @pytest.fixture
+def basic_build_with_exclude_path(request):
+    ctx = TestContext()
+
+    ctx.add_src_file("main.cpp", MAIN_GOOD_CPP_CONTENT)
+    ctx.add_src_file("exclude/exclude1.cpp", MAIN_GOOD_CPP_CONTENT)
+    ctx.add_src_file("exclude/exclude2.cpp", MAIN_GOOD_CPP_CONTENT)
+    ctx.add_src_file("exclude.cpp", MAIN_GOOD_CPP_CONTENT)
+    ctx.add_build_file("compile_commands.json", COMPLIE_COMMANDS_CONTENT.format(ctx.src_path))
+
+    request.addfinalizer(ctx.destroy)
+    return ctx
+
+
+@pytest.fixture
 def source_only_build(request):
     ctx = TestContext()
 

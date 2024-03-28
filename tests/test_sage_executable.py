@@ -189,3 +189,24 @@ def test_basic_with_hidden_file(basic_build_hidden_file):
     assert u"visible/visible/.hidden.cpp" not in str(output), str(output)
     assert u".hidden.cpp" not in str(output), str(output)
     assert u"main.cpp" in str(output), str(output)
+
+
+def test_basic_with_exclude_path(basic_build_with_exclude_path):
+    proc = subprocess.Popen([
+        "sage",
+        "--source-path",
+        basic_build_with_exclude_path.src_path,
+        "--build-path",
+        basic_build_with_exclude_path.bld_path,
+        "--exclude-path",
+        "exclude exclude.cpp",
+        "--verbose"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
+
+    (output, error) = proc.communicate()
+
+    assert u"exclude.cpp" not in str(output), str(output)
+    assert u"exclude1.cpp" not in str(output), str(output)
+    assert u"exclude2.cpp" not in str(output), str(output)
+    assert u"main.cpp" in str(output), str(output)
