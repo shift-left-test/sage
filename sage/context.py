@@ -127,16 +127,13 @@ class FileAnalysis(object):
 class WrapperContext(object):
     src_list = None
     re_tool_option = re.compile(r"(.+):(.+)")
+    re_ext = re.compile(r'^.+\.(c|cc|cpp|cxx|h|hh|hpp|hxx)$')
 
     def __init__(
             self, tool_list, source_path, build_path=None, tool_path=None, output_path=None,
-            target_triple=None, exclude_path=""):
-        def get_file_list(path):
-            ret = []
-            for root, _, files in os.walk(path):
-                for filename in files:
-                    ret.append(os.path.join(root, filename))
-            return ret
+            target_triple=None, exclude_path="", max_files_duplo=0):
+        def is_hidden(path):
+            return path != "." and path != ".." and path.startswith(".")
 
         self.src_path = os.path.abspath(source_path) if source_path else os.getcwd()
         self.bld_path = os.path.abspath(build_path) if build_path else None
@@ -144,23 +141,27 @@ class WrapperContext(object):
         self.output_path = os.path.abspath(output_path) if output_path else None
         self.proj_file = "compile_commands.json"
         self.target = target_triple
+        self.max_files_duplo = max_files_duplo
 
         self.exc_path_list = []
 
         for exc in shlex.split(exclude_path):
-            exc_path = os.path.join(self.src_path, exc)
+            exc_path = os.path.abspath(os.path.join(self.src_path, exc))
             if not os.path.exists(exc_path):
                 continue
-            if os.path.isdir(exc_path):
-                for cur_file in get_file_list(exc_path):
-                    self.exc_path_list.append(cur_file)
-            else:
-                self.exc_path_list.append(exc_path)
+            self.exc_path_list.append(exc_path)
 
-        for target_file in get_file_list(self.src_path):
-            if (target_file not in self.exc_path_list
-                    and self._is_hidden_in_path(target_file, self.src_path)):
-                self.exc_path_list.append(target_file)
+        for root, dirs, files in os.walk(self.src_path):
+            for dirname in dirs:
+                dirpath = os.path.abspath(os.path.join(root, dirname))
+                if is_hidden(dirname):
+                    self.exc_path_list.append(dirpath)
+                    dirs.remove(dirname)
+
+            for filename in files:
+                filepath = os.path.abspath(os.path.join(root, filename))
+                if is_hidden(filename) and self.re_ext.match(filename.lower()):
+                    self.exc_path_list.append(filepath)
 
         self.tool_dict = {}  # key: tool name, value: option
         for tool_info in tool_list:
@@ -202,7 +203,7 @@ class WrapperContext(object):
             with open(self.proj_file_path) as proj_f:
                 compile_commands = json.load(proj_f)
                 for cmd in compile_commands:
-                    src_path = os.path.realpath(os.path.join(cmd["directory"], cmd["file"]))
+                    src_path = os.path.abspath(os.path.join(cmd["directory"], cmd["file"]))
                     self.src_list.append(src_path)
         else:
             pass
@@ -225,11 +226,3 @@ class WrapperContext(object):
     def add_violation_issue(self, issue):
         self.get_file_analysis(issue.file_name).violations[issue.priority.name].append(issue)
     add_violation_issue.__annotations__ = {'issue': ViolationIssue}
-
-    @classmethod
-    def _is_hidden_in_path(cls, target_path, base_path="/"):
-        names = os.path.relpath(target_path, base_path).split(os.path.sep)
-        for cur in names:
-            if cur != "." and cur != ".." and cur.startswith("."):
-                return True
-        return False

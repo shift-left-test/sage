@@ -58,6 +58,18 @@ class ToolWrapper():
         else:
             return ""
 
+    @staticmethod
+    def _is_file_in_path_list(file_path, file_path_list):
+        file_path = os.path.abspath(file_path)
+        for cur_path in file_path_list:
+            cur_path = os.path.abspath(cur_path)
+            if os.path.isdir(cur_path):
+                if os.path.commonpath([file_path, cur_path]) == cur_path:
+                    return True
+            elif file_path == cur_path:
+                return True
+        return False
+
     def run(self, ctx):
         pass
     run.__annotations__ = {'ctx': WrapperContext}

@@ -209,7 +209,7 @@ class Report(object):
             json.dump(self.wdata, reportfile, default=dumper, indent=4)
 
         # Copy css file
-        css_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "resources", "style.css")
+        css_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resources", "style.css")
         shutil.copy(css_path, os.path.join(dirpath, "style.css"))
 
         # Write html file

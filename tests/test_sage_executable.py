@@ -73,7 +73,7 @@ def test_bad_content_with_tool_option(basic_build_bad_content):
     assert output1 != output2
 
 
-def test_bad_content_with_tool_option(basic_build_bad_content):
+def test_bad_content_with_tool_option_and_report(basic_build_bad_content):
     proc = subprocess.Popen([
         "sage",
         "--source-path",
@@ -99,6 +99,39 @@ def test_bad_content_with_tool_option(basic_build_bad_content):
         report = f.readlines()
         assert u"runtime/indentation_namespace" not in report
         assert u"unusedPrivateFunction" not in report
+
+
+def test_bad_content_with_limit_duplo(basic_build_multiple_bad_content):
+    proc1 = subprocess.Popen([
+        "sage",
+        "--source-path",
+        basic_build_multiple_bad_content.src_path,
+        "--build-path",
+        basic_build_multiple_bad_content.bld_path,
+        "--verbose",
+        "duplo",
+        "metrix++"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
+
+    (output1, error1) = proc1.communicate()
+
+    proc2 = subprocess.Popen([
+        "sage",
+        "--source-path",
+        basic_build_multiple_bad_content.src_path,
+        "--build-path",
+        basic_build_multiple_bad_content.bld_path,
+        "--max-files-duplo=2",
+        "--verbose",
+        "duplo:-ml 10",
+        "metrix++"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
+
+    (output2, error2) = proc2.communicate()
+
+    assert output1 != output2
 
 
 def test_output(basic_build):
@@ -182,4 +215,31 @@ def test_basic_with_hidden_file(basic_build_hidden_file):
 
     (output, error) = proc.communicate()
 
-    assert u".b/a.cpp" not in str(output), str(output)
+    assert u".hidden/visible1.cpp" not in str(output), str(output)
+    assert u".hidden/.hidden2.cpp" not in str(output), str(output)
+    assert u"visible/.hidden/visible2.cpp" not in str(output), str(output)
+    assert u"visible/.hidden/.hidden3.cpp" not in str(output), str(output)
+    assert u"visible/visible/.hidden4.cpp" not in str(output), str(output)
+    assert u".hidden1.cpp" not in str(output), str(output)
+    assert u"main.cpp" in str(output), str(output)
+
+
+def test_basic_with_exclude_path(basic_build_with_exclude_path):
+    proc = subprocess.Popen([
+        "sage",
+        "--source-path",
+        basic_build_with_exclude_path.src_path,
+        "--build-path",
+        basic_build_with_exclude_path.bld_path,
+        "--exclude-path",
+        "exclude exclude.cpp",
+        "--verbose"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
+
+    (output, error) = proc.communicate()
+
+    assert u"exclude.cpp" not in str(output), str(output)
+    assert u"exclude1.cpp" not in str(output), str(output)
+    assert u"exclude2.cpp" not in str(output), str(output)
+    assert u"main.cpp" in str(output), str(output)

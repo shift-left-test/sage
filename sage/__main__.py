@@ -60,10 +60,14 @@ def main():
     parser.add_argument("--source-path", help="source path")
     parser.add_argument("--build-path", help="build path")
     parser.add_argument(
-        "--tool-path", help="if this option is specified, only tools in this path is executed")
+        "--tool-path", help="If this option is specified, only tools in this path is executed")
     parser.add_argument("--output-path", help="output path")
     parser.add_argument("--exclude-path", help="exclude path")
     parser.add_argument("--target-triple", help="compile target triple")
+    parser.add_argument("--max-files-duplo", help=textwrap.dedent("""\
+        If the number of target source files is more than max-files-duplo, duplo does not work.
+        If 0 or less, there is no limit. (Default: 10000)"""),
+        type=int, default=10000)
     parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
     parser.add_argument(
         "tools", nargs="*", help=textwrap.dedent("""\
@@ -92,7 +96,7 @@ def main():
     # make WrapperContext
     ctx = WrapperContext(
         args.tools, args.source_path, args.build_path, args.tool_path,
-        args.output_path, args.target_triple, args.exclude_path)
+        args.output_path, args.target_triple, args.exclude_path, args.max_files_duplo)
 
     if not ctx.proj_file_exists():
         LOGGER.error("There is no 'compile_commands.json'")

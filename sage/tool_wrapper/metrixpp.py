@@ -49,29 +49,28 @@ class MetrixPPWrapper(ToolWrapper):
             "--std.code.maintindex.simple"
         ]
 
-        re_ext = re.compile(r'^.+\.(c|cc|cpp|cxx|h|hh|hpp|hxx)$')
         target_files = []
         for root, dirs, files in os.walk(os.path.abspath(ctx.src_path)):
             for name in dirs:
                 p = os.path.join(root, name)
                 if os.path.islink(p):
-                    args.append('--exclude-files=%s' % os.path.basename(p))
-            for filename in files:
-                filepath = os.path.join(root, filename)
-                if filepath in ctx.exc_path_list:
-                    continue
-                if re_ext.match(filename.lower()):
-                    target_files.append(filepath)
+                    args.append('--ed="^%s$"' % os.path.abspath(p))
 
+        for each in ctx.exc_path_list:
+            if os.path.isdir(each):
+                args.append('--ed="^%s$"' % os.path.abspath(each))
+            else:
+                args.append('--ef="^%s$"' % os.path.basename(each))
+
+        args.append(r'--if="^.+\.([cC]|[cC][cC]|[cC][pP][pP]|[cC][xX][xX]|[hH]|[hH][hH]|[hH][pP][pP]|[hH][xX][xX])$"')
         args.append("--")
+        args.append(ctx.src_path)
 
-        if len(target_files) > 0:
-            args += target_files
-        else:
+        proc = Popen(" ".join(args), stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
+        out, err = check_non_zero_return_code(proc, args)
+
+        if "INFO:\tProcessing:" not in err:
             return
-
-        proc = Popen(args, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-        check_non_zero_return_code(proc, args)
 
         args = [
             "metrix++",
@@ -80,7 +79,7 @@ class MetrixPPWrapper(ToolWrapper):
             os.path.abspath(ctx.src_path)
         ]
 
-        proc = Popen(args, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+        proc = Popen(" ".join(args), stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
         out, err = check_non_zero_return_code(proc, args)
         results = csv.DictReader(out.splitlines())
         for row in results:

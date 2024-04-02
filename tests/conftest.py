@@ -106,13 +106,12 @@ class TestContext():
     def add_build_file(self, filepath, content):
         self._add_file(self.bld_path, filepath, content)
 
-    def run_tools(self, target_tools=[], ctx=None):
+    def run_tools(self, target_tools=[], max_files_duplo=0):
         from sage.tool_wrapper import load_tools, get_tool_list
         from sage.__main__ import run_tools
         from sage.context import WrapperContext
 
-        if not ctx:
-            ctx = WrapperContext(target_tools, self.src_path, self.bld_path)
+        ctx = WrapperContext(target_tools, self.src_path, self.bld_path, max_files_duplo=max_files_duplo)
 
         for toolname in get_tool_list():
             option = ctx.get_tool(toolname)
@@ -172,11 +171,43 @@ def basic_build_bad_content(request):
 
 
 @pytest.fixture
+def basic_build_multiple_bad_content(request):
+    ctx = TestContext()
+
+    ctx.add_src_file("main.cpp", MAIN_BAD_CPP_CONTENT)
+    ctx.add_src_file("main2.cpp", MAIN_BAD_CPP_CONTENT)
+    ctx.add_src_file("main3.cpp", MAIN_BAD_CPP_CONTENT)
+    ctx.add_build_file("compile_commands.json", COMPLIE_COMMANDS_CONTENT.format(ctx.src_path))
+
+    request.addfinalizer(ctx.destroy)
+    return ctx
+
+
+@pytest.fixture
 def basic_build_hidden_file(request):
     ctx = TestContext()
 
     ctx.add_src_file("main.cpp", MAIN_GOOD_CPP_CONTENT)
-    ctx.add_src_file(".b/a.cpp", MAIN_GOOD_CPP_CONTENT)
+    ctx.add_src_file(".hidden1.cpp", MAIN_GOOD_CPP_CONTENT)
+    ctx.add_src_file(".hidden/visible1.cpp", MAIN_GOOD_CPP_CONTENT)
+    ctx.add_src_file(".hidden/.hidden2.cpp", MAIN_GOOD_CPP_CONTENT)
+    ctx.add_src_file("visible/.hidden/visible2.cpp", MAIN_GOOD_CPP_CONTENT)
+    ctx.add_src_file("visible/.hidden/.hidden3.cpp", MAIN_GOOD_CPP_CONTENT)
+    ctx.add_src_file("visible/visible/.hidden4.cpp", MAIN_GOOD_CPP_CONTENT)
+    ctx.add_build_file("compile_commands.json", COMPLIE_COMMANDS_CONTENT.format(ctx.src_path))
+
+    request.addfinalizer(ctx.destroy)
+    return ctx
+
+
+@pytest.fixture
+def basic_build_with_exclude_path(request):
+    ctx = TestContext()
+
+    ctx.add_src_file("main.cpp", MAIN_GOOD_CPP_CONTENT)
+    ctx.add_src_file("exclude/exclude1.cpp", MAIN_GOOD_CPP_CONTENT)
+    ctx.add_src_file("exclude/exclude2.cpp", MAIN_GOOD_CPP_CONTENT)
+    ctx.add_src_file("exclude.cpp", MAIN_GOOD_CPP_CONTENT)
     ctx.add_build_file("compile_commands.json", COMPLIE_COMMANDS_CONTENT.format(ctx.src_path))
 
     request.addfinalizer(ctx.destroy)

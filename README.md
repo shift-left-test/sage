@@ -41,7 +41,8 @@ To install the package:
 ```bash
 usage: sage [-h] [--source-path SOURCE_PATH] [--build-path BUILD_PATH]
             [--tool-path TOOL_PATH] [--output-path OUTPUT_PATH]
-            [--exclude-path EXCLUDE_PATH] [--target-triple TARGET_TRIPLE] [-v]
+            [--exclude-path EXCLUDE_PATH] [--target-triple TARGET_TRIPLE]
+            [--max-files-duplo MAX_FILES_DUPLO] [-v]
             [tools [tools ...]]
 
 Static Analysis Group Execution
@@ -58,13 +59,16 @@ optional arguments:
   --build-path BUILD_PATH
                         build path
   --tool-path TOOL_PATH
-                        if this option is specified, only tools in this path is executed
+                        If this option is specified, only tools in this path is executed
   --output-path OUTPUT_PATH
                         output path
   --exclude-path EXCLUDE_PATH
                         exclude path
   --target-triple TARGET_TRIPLE
                         compile target triple
+  --max-files-duplo MAX_FILES_DUPLO
+                        If the number of target source files is more than max-files-duplo, duplo does not work.
+                        If 0 or less, there is no limit. (Default: 10000)
   -v, --verbose         increase output verbosity
 ```
 
