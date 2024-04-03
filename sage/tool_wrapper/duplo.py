@@ -6,6 +6,7 @@ Copyright (c) 2020 LG Electronics Inc.
 SPDX-License-Identifier: MIT
 """
 
+import logging
 import os
 import sys
 import glob
@@ -23,6 +24,9 @@ if sys.version_info.major == 2:
     from ..popen_wrapper import Popen, PIPE, DEVNULL
 else:
     from subprocess import Popen, PIPE, DEVNULL
+
+
+LOGGER = logging.getLogger('SAGE')
 
 
 # TODO: use tmp_dir for duplo.xml
@@ -61,6 +65,8 @@ class DuploWrapper(ToolWrapper):
                 return
 
             if ctx.max_files_duplo > 0 and len(target_cppfiles) > ctx.max_files_duplo:
+                LOGGER.warning(
+                    "* duplo is skipped! (limit: %d, target files: %d)" % (ctx.max_files_duplo, len(target_cppfiles)))
                 return
 
 

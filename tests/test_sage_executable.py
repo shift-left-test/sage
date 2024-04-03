@@ -131,6 +131,8 @@ def test_bad_content_with_limit_duplo(basic_build_multiple_bad_content):
 
     (output2, error2) = proc2.communicate()
 
+    assert u"duplo is skipped!" in str(output2), str(output2)
+
     assert output1 != output2
 
 
